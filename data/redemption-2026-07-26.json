@@ -1,6 +1,6 @@
 {
   "chainId": 4663,
-  "block": "19407270",
+  "block": "19416285",
   "collateral": [
     {
       "symbol": "USDe",
@@ -31,7 +31,7 @@
       "erc4626": true,
       "backing_asset": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
       "backing_is_usdg": true,
-      "total_assets_usdg": 16904404.28,
+      "total_assets_usdg": 16904420.95,
       "idle_usdg_in_vault": 16901203.71,
       "redemption_ladder": [
         {
@@ -46,31 +46,31 @@
         },
         {
           "redeem_units": 100000,
-          "usdg_out": 100320.91,
+          "usdg_out": 100321.01,
           "status": "OK"
         },
         {
           "redeem_units": 1000000,
-          "usdg_out": 1003209.08,
+          "usdg_out": 1003210.07,
           "status": "OK"
         },
         {
           "redeem_units": 5000000,
-          "usdg_out": 5016045.43,
+          "usdg_out": 5016050.38,
           "status": "OK"
         },
         {
           "redeem_units": 10000000,
-          "usdg_out": 10032090.87,
+          "usdg_out": 10032100.78,
           "status": "OK"
         },
         {
           "redeem_units": 15000000,
-          "usdg_out": 15048136.34,
+          "usdg_out": 15048151.18,
           "status": "OK"
         }
       ],
-      "max_verified_redemption_usdg": 15048136.34,
+      "max_verified_redemption_usdg": 15048151.18,
       "max_is_a_floor_not_a_ceiling": false,
       "layerzero_oft": false,
       "access_control_mint_burn": false,

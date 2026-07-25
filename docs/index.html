@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LASTOUT — liquidation coverage on Robinhood Chain</title>
+<meta name="description" content="How much lending collateral on Robinhood Chain can actually exit on-chain. Measured daily, reproducible.">
+<style>
+:root{--bg:#FCFCFC;--surface:#F4F3EF;--line:#E3E1DA;--ink:#16181C;--mut:#6B6E76;--dim:#8B8E96;--amber:#EA8C00;--bad:#B42318}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1100px;margin:0 auto;padding:56px 24px 80px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:44px}
+.mark{font-size:22px;font-weight:700;letter-spacing:.22em}
+.mark b{color:var(--amber)}
+.tag-line{color:var(--mut);font-size:12.5px;margin-top:7px;letter-spacing:.02em}
+.stamp{color:var(--dim);font-size:11.5px;text-align:right;letter-spacing:.04em;line-height:1.9}
+.head{font-size:10.5px;letter-spacing:.19em;text-transform:uppercase;color:var(--mut);margin:0 0 12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:14px;margin-bottom:46px}
+.card{border:1px solid var(--line);border-radius:9px;padding:17px 19px;background:var(--surface)}
+.card .v{font-size:29px;font-weight:700;letter-spacing:-.02em;margin-top:3px}
+.card .s{color:var(--dim);font-size:11.5px;margin-top:5px}
+.card.alert{border-color:var(--amber)}
+.card.alert .v{color:var(--amber)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th{text-align:left;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);
+  font-weight:600;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+th.num,td.num{text-align:right}
+td{padding:13px 16px;border-bottom:1px solid var(--line);font-size:12.5px}
+tr:last-child td{border-bottom:none}
+.sym{font-weight:700}
+.loan{color:var(--dim);font-weight:400}
+.note-cell{color:var(--dim);font-style:italic}
+.unmeasured td{opacity:.62}
+.tag{font-size:10px;padding:3px 8px;border-radius:4px;letter-spacing:.05em;white-space:nowrap;
+  background:#E7E6E1;color:var(--mut)}
+.tag.bad{background:#FBE9E7;color:var(--bad)}
+.tag.warn{background:#FDF0DC;color:#8A5200}
+.cov{min-width:150px}
+.bar{height:5px;border-radius:99px;background:#E3E1DA;overflow:hidden;margin-bottom:6px}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--dim)}
+.bar i.bad{background:var(--bad)}
+.bar i.warn{background:var(--amber)}
+.pct{font-size:12px;font-weight:700;color:var(--mut)}
+.pct.bad{color:var(--bad)}
+.pct.warn{color:var(--amber)}
+section{margin-top:46px}
+p{color:var(--mut);max-width:74ch;font-size:12.5px}
+code{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:11.5px}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:15px;
+  overflow-x:auto;font-size:11.5px;color:var(--ink)}
+a{color:var(--amber)}
+ol{color:var(--mut);font-size:12.5px;max-width:74ch;padding-left:19px}
+li{margin-bottom:8px}
+footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--dim);font-size:11.5px;max-width:74ch}
+@media(max-width:640px){.wrap{padding:34px 16px 60px}.stamp{text-align:left}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="mark">LAST<b>OUT</b></div>
+    <div class="tag-line">Liquidation coverage on Robinhood Chain. Don't be last out.</div>
+  </div>
+  <div class="stamp">
+    CHAIN 4663 · MORPHO<br>
+    POOL DEPTH · BLOCK 19416281<br>
+    REDEMPTION · BLOCK 19416285
+  </div>
+</header>
+
+<p class="head">Measured</p>
+<div class="cards">
+  <div class="card">
+    <div class="s">Collateral measured</div>
+    <div class="v">$241,214,986</div>
+    <div class="s">across 3 markets</div>
+  </div>
+  <div class="card">
+    <div class="s">Can exit on-chain</div>
+    <div class="v">$17,602,909</div>
+    <div class="s">7.30% coverage</div>
+  </div>
+  <div class="card alert">
+    <div class="s">Bridged, pool is the only exit</div>
+    <div class="v">$224,444,889</div>
+    <div class="s">$2,554,758 of exit · 1.14%</div>
+  </div>
+  <div class="card alert">
+    <div class="s">Bridged collateral to exit</div>
+    <div class="v">87.9 : 1</div>
+    <div class="s">dollars waiting per dollar out</div>
+  </div>
+</div>
+
+<p class="head">By market</p>
+<div class="tablewrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Market</th><th class="num">Collateral</th><th class="num">Borrowed</th>
+        <th class="num">Max exit</th><th>Mechanism</th><th>Coverage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="sym">USDe <span class="loan">/ USDG</span></td>
+        <td class="num">$177,134,406</td>
+        <td class="num">$152,730,010</td>
+        <td class="num">$541,600</td>
+        <td class="mech"><span class="tag bad">bridged</span></td>
+        <td class="cov">
+          <div class="bar"><i class="bad" style="width:0.40%"></i></div>
+          <span class="pct bad">0.31%</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="sym">syrupUSDG <span class="loan">/ USDG</span></td>
+        <td class="num">$47,310,483</td>
+        <td class="num">$41,947,672</td>
+        <td class="num">$2,013,158</td>
+        <td class="mech"><span class="tag bad">bridge-minted</span></td>
+        <td class="cov">
+          <div class="bar"><i class="bad" style="width:4.26%"></i></div>
+          <span class="pct bad">4.26%</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="sym">spUSDG <span class="loan">/ USDG</span></td>
+        <td class="num">$16,770,097</td>
+        <td class="num">$13,888,072</td>
+        <td class="num">$15,048,151</td>
+        <td class="mech"><span class="tag ok">redeemable</span></td>
+        <td class="cov">
+          <div class="bar"><i class="ok" style="width:89.73%"></i></div>
+          <span class="pct ok">89.73%</span>
+        </td>
+      </tr>
+      <tr class="unmeasured">
+        <td class="sym">wsNET <span class="loan">/ USDG</span></td>
+        <td class="num">$0</td>
+        <td class="num">$10,497</td>
+        <td colspan="3" class="note-cell">not measured</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<section>
+  <p class="head">What this measures</p>
+  <p>A liquidator has two ways to turn seized collateral into the loan asset: sell it into a pool, or
+  redeem it for its backing. Coverage is the larger of the two, capped at the collateral itself.</p>
+  <p>On Robinhood Chain the selling side is unusually narrow. Raw Uniswap v4 is the only venue a
+  contract can call &mdash; 0x rejects these assets, Arcus and Lighter sign orders off-chain, and the
+  UniswapX reactor carries no code here. So when redemption is unavailable, the pool is the whole exit.</p>
+  <p>Markets marked <em>not measured</em> have exposure but no probe yet. They are never counted as covered.</p>
+</section>
+
+<section>
+  <p class="head">Reproduce it</p>
+  <pre>python3 probe/markets.py      # Morpho markets on RHC
+python3 probe/exit_depth.py   # pool depth, laddered
+python3 probe/redemption.py   # local redemption paths</pre>
+  <p>All three are read-only and need no API key, account, or funds. Snapshots land in
+  <code>data/</code> daily. Source: <a href="https://github.com/lastoutxyz/lastout-x402">github.com/lastoutxyz/lastout-x402</a></p>
+</section>
+
+<section>
+  <p class="head">How to read it wrong</p>
+  <ol>
+    <li>Coverage is not a forecast. A low ratio says an orderly exit at size is unavailable today.
+    It does not predict a liquidation, and reported bad debt across these markets is currently zero.</li>
+    <li>These are quotes, not settled transactions. A quote and an executed swap can disagree where
+    hooks or transfer restrictions are involved.</li>
+    <li>Redemption capacity moves. It depends on backing the vault currently holds, which other
+    redeemers can draw down between this measurement and any liquidation.</li>
+    <li>One block is one block. The series in <code>data/</code> is the part worth trusting.</li>
+  </ol>
+</section>
+
+<footer>
+  Snapshots: <code>markets-2026-07-26.json</code> · <code>pool-depth-2026-07-26.json</code> · <code>redemption-2026-07-26.json</code><br><br>
+  Not affiliated with, endorsed by, sponsored by, or connected to Robinhood Markets, Inc. or any of
+  its subsidiaries. Nothing here is financial, investment, or legal advice. Every figure is a
+  measurement of on-chain state at a stated block &mdash; check it yourself rather than taking ours.
+</footer>
+
+</div>
+</body>
+</html>
