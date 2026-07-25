@@ -4,7 +4,8 @@
 Pool depth is only the binding exit constraint when a liquidator cannot redeem
 the asset for its backing on the same chain. Some wrappers are ERC-4626 vaults
 holding their backing locally and can be redeemed instantly and at size; others
-are bridged representations (LayerZero OFT) whose redemption requires leaving
+are bridged representations - a LayerZero OFT, or an AccessControl ERC-20 whose
+mint and burn authority sits with a bridge - whose redemption requires leaving
 the chain first, which is neither instant nor atomic.
 
 Measuring pool depth without checking this overstates the problem. This script
@@ -15,6 +16,7 @@ Requires `cast` (Foundry) and Python 3.9+.
 
 import json
 import subprocess
+import time
 
 RPC = "https://rpc.mainnet.chain.robinhood.com"
 USDG = "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"  # 6 decimals
@@ -29,14 +31,51 @@ COLLATERAL = {
 LADDER = [1, 1_000, 100_000, 1_000_000, 5_000_000, 10_000_000, 15_000_000]
 
 
-def call(address, signature, *args):
-    """Return the first return value as a string, or None if the call reverts."""
+class RpcUnavailable(Exception):
+    """The node did not answer. This is not the same as the call reverting."""
+
+
+def call(address, signature, *args, retries=3):
+    """Return the first return value, or None if the call genuinely reverted.
+
+    A transient RPC failure must never be reported as a revert - that would
+    silently turn a dropped connection into "no liquidity". Retry, then raise
+    rather than guess.
+    """
     cmd = ["cast", "call", address, signature, *[str(a) for a in args],
            "--rpc-url", RPC]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    last_err = ""
+    for attempt in range(retries):
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip().split()[0].replace("[", "")
+        last_err = (result.stderr or "").lower()
+        # A real revert is deterministic - do not waste retries on it.
+        if "execution reverted" in last_err or "0x" in (result.stdout or ""):
+            return None
+        time.sleep(0.5 * (attempt + 1))
+    raise RpcUnavailable(f"{signature} on {address}: {last_err.strip()[:200]}")
+
+
+def find_role_holder(token, role):
+    """Return the address most recently granted `role`, from RoleGranted logs."""
+    result = subprocess.run(
+        ["cast", "logs", "--from-block", "0", "--to-block", "latest",
+         "--address", token, "RoleGranted(bytes32,address,address)",
+         "--rpc-url", RPC, "--json"],
+        capture_output=True, text=True,
+    )
     if result.returncode != 0 or not result.stdout.strip():
         return None
-    return result.stdout.strip().split()[0].replace("[", "")
+    try:
+        logs = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+    for entry in reversed(logs):
+        topics = entry.get("topics", [])
+        if len(topics) >= 3 and topics[1].lower() == role.lower():
+            return "0x" + topics[2][-40:]
+    return None
 
 
 def check(symbol):
@@ -57,21 +96,47 @@ def check(symbol):
 
         ladder = []
         for size in LADDER:
-            out = call(token, "previewRedeem(uint256)(uint256)", size * 10 ** decimals)
+            try:
+                out = call(token, "previewRedeem(uint256)(uint256)", size * 10 ** decimals)
+                status = "OK" if out else "REVERT"
+            except RpcUnavailable:
+                out, status = None, "RPC_UNAVAILABLE"
             ladder.append({
                 "redeem_units": size,
                 "usdg_out": round(int(out) / 1e6, 2) if out else None,
-                "status": "OK" if out else "REVERT",
+                "status": status,
             })
+        if any(r["status"] == "RPC_UNAVAILABLE" for r in ladder):
+            report["ladder_incomplete"] = True
         report["redemption_ladder"] = ladder
         succeeded = [r["usdg_out"] for r in ladder if r["usdg_out"]]
+        # A ceiling is only a ceiling if every larger size was actually answered.
         report["max_verified_redemption_usdg"] = max(succeeded) if succeeded else 0
+        report["max_is_a_floor_not_a_ceiling"] = bool(report.get("ladder_incomplete"))
 
     # LayerZero OFT: a bridged representation, redeemable only off this chain.
     endpoint = call(token, "endpoint()(address)")
     report["layerzero_oft"] = endpoint is not None
     if endpoint:
         report["lz_endpoint"] = endpoint
+
+    # Bridge-minted: an AccessControl ERC-20 where a single authority mints and
+    # burns. Burning locally destroys the token; the credit is issued elsewhere,
+    # asynchronously. Whether the mint authority holds any backing decides
+    # whether a burn could ever be paid out on this chain.
+    minter_role = call(token, "MINTER_ROLE()(bytes32)")
+    burner_role = call(token, "BURNER_ROLE()(bytes32)")
+    report["access_control_mint_burn"] = bool(minter_role and burner_role)
+    if report["access_control_mint_burn"]:
+        report["minter_role"] = minter_role
+        report["burner_role"] = burner_role
+        authority = find_role_holder(token, minter_role)
+        if authority:
+            report["mint_authority"] = authority
+            backing = call(USDG, "balanceOf(address)(uint256)", authority)
+            report["mint_authority_usdg_balance"] = (
+                round(int(backing) / 1e6, 2) if backing else 0.0
+            )
 
     if report["erc4626"]:
         report["local_exit"] = "REDEEMABLE"
@@ -81,11 +146,19 @@ def check(symbol):
         report["note"] = ("LayerZero OFT. Redemption to backing requires bridging off "
                           "Robinhood Chain first - not atomic, not available to a "
                           "liquidator inside one transaction.")
+    elif report["access_control_mint_burn"]:
+        held = report.get("mint_authority_usdg_balance", 0.0)
+        report["local_exit"] = "BRIDGE_MINTED"
+        report["note"] = ("AccessControl ERC-20 with a single mint/burn authority "
+                          f"holding {held} USDG. Burning destroys the token here; any "
+                          "credit is issued on another chain, asynchronously. With no "
+                          "backing held locally there is nothing to redeem against, so "
+                          "the pool is the only atomic exit.")
     else:
         report["local_exit"] = "NONE_FOUND"
-        report["note"] = ("No ERC-4626, proxy, or OFT interface responded. No local "
-                          "redemption path identified; the pool appears to be the only "
-                          "on-chain exit. Absence of evidence, not proof of absence.")
+        report["note"] = ("No ERC-4626, proxy, OFT, or mint/burn-authority interface "
+                          "responded. No local redemption path identified. Absence of "
+                          "evidence, not proof of absence.")
 
     return report
 

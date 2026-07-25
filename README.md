@@ -42,7 +42,7 @@ So when redemption is unavailable, **raw Uniswap v4 is the whole exit.**
 
 ## What we measured
 
-Robinhood Chain mainnet, 2026-07-25. Pool depth at block `18957397`, redemption paths at block `18954704`. Both reproducible with the scripts in `probe/`.
+Robinhood Chain mainnet, 2026-07-25. Pool depth at block `18957397`, redemption paths at block `19388795`. Both reproducible with the scripts in `probe/`.
 
 Morpho on Robinhood Chain carries **$205,661,243** of borrow across 37 markets. Three markets hold effectively all of it.
 
@@ -50,8 +50,8 @@ Morpho on Robinhood Chain carries **$205,661,243** of borrow across 37 markets. 
 |---|---|---|---|---|---|
 | USDe / USDG | $175,005,841 | $563,090 | — | $563,090 | **0.32%** |
 | syrupUSDG / USDG | $47,129,615 | $2,013,158 | — | $2,013,158 | **4.27%** |
-| spUSDG / USDG | $15,899,540 | $1,011 | **$15,047,391** | $15,047,391 | **94.64%** |
-| **Total** | **$238,034,996** | | | **$17,623,639** | **7.40%** |
+| spUSDG / USDG | $15,899,540 | $1,011 | **$15,048,106** | $15,048,106 | **94.64%** |
+| **Total** | **$238,034,996** | | | **$17,624,354** | **7.40%** |
 
 ### The finding is the split, not the total
 
@@ -59,14 +59,14 @@ The chain-wide 7.40% is an average across two very different situations.
 
 | | Collateral | Exit | Coverage |
 |---|---|---|---|
-| Locally redeemable (spUSDG) | $15,899,540 | $15,047,391 | **94.64%** |
+| Locally redeemable (spUSDG) | $15,899,540 | $15,048,106 | **94.64%** |
 | Bridged, pool-only (USDe + syrupUSDG) | **$222,135,456** | **$2,576,248** | **1.16%** |
 
 **$222,135,456 of collateral has no redemption path on this chain and $2,576,248 of pool behind it. That is 86.2 to 1.**
 
 - **spUSDG** is an ERC-4626 vault whose `asset()` is USDG, holding **$16,454,798** of USDG idle against a 16,406,686 supply. `previewRedeem` returns cleanly up to 15,000,000 units. No pause function, no whitelist gate found. Its pool is nearly empty — $1,011 — and that does not matter, because nobody needs the pool.
 - **USDe** is a LayerZero OFT (endpoint `0x6F475642a6e85809B1c36Fa62763669b1b48DD5B`). It is a bridged representation. Redeeming it for backing means leaving Robinhood Chain first, which is not atomic and not something a liquidator can do inside one transaction. Its exit here is the pool.
-- **syrupUSDG** answered no ERC-4626, proxy, or OFT interface we tried. We could not identify a local redemption path. That is absence of evidence, not proof of absence — see limitations.
+- **syrupUSDG** is an AccessControl ERC-20 whose `MINTER_ROLE` and `BURNER_ROLE` are both held by a single contract, `0x01fa676ecc8662e6923fdf06ba5278a96ccd725c`. That contract holds **0 USDG**. Burning syrupUSDG here destroys the token; any credit is issued on another chain, asynchronously. With no backing held locally there is nothing to redeem against, so the pool is its only atomic exit. 47,055,013 of its 48,056,925 supply — **97.9%** — sits in the Morpho market.
 
 ### Where the pools run dry
 
@@ -141,7 +141,7 @@ RPC: `https://rpc.mainnet.chain.robinhood.com` · Chain ID `4663`
 
 Stated plainly, because they change how the numbers should be read.
 
-1. **syrupUSDG's exit is unresolved.** No standard interface responded, so we treat the pool as its only exit. If a redemption path exists that we did not find, its coverage is understated and the bridged-subset number moves. This is the largest open question in the table above.
+1. **A quote is not a guarantee of capacity.** `previewRedeem` reports what the vault would pay, but the backing can be drawn down by other redeemers between the measurement and the liquidation. Redemption coverage is a snapshot of a moving balance — spUSDG's idle USDG moved by roughly $374,000 during a single afternoon of measurement.
 2. **Quoted, not executed.** Pool depth comes from Uniswap v4 Quoter view calls and redemption from `previewRedeem`. A quote and a settled transaction can disagree when hooks or transfer restrictions are involved. Execution simulation is the next step.
 3. **Redemption capacity is not static.** spUSDG is redeemable because the vault currently holds the USDG. That balance can be drawn down by other redeemers. Coverage measured once is coverage at one block.
 4. **Point-in-time.** Two blocks, minutes apart. Liquidity moves. Coverage is only meaningful as a time series, which starts in `data/`.
