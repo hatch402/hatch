@@ -15,6 +15,7 @@ cd "$REPO" || exit 1
 DATE="$(date +%F)"
 POOL="data/pool-depth-${DATE}.json"
 REDEEM="data/redemption-${DATE}.json"
+MARKETS="data/markets-${DATE}.json"
 LOG="/tmp/lastout-snapshot.log"
 
 log() { echo "[$(date +'%F %T')] $*" | tee -a "$LOG"; }
@@ -26,14 +27,15 @@ command -v cast >/dev/null 2>&1 || { log "FATAL: cast not on PATH"; exit 1; }
 
 log "snapshot start"
 
-python3 probe/exit_depth.py > "$POOL" 2>>"$LOG"
-python3 probe/redemption.py > "$REDEEM" 2>>"$LOG"
+python3 probe/markets.py    > "$MARKETS" 2>>"$LOG"
+python3 probe/exit_depth.py > "$POOL"    2>>"$LOG"
+python3 probe/redemption.py > "$REDEEM"  2>>"$LOG"
 
-# Validate before trusting either file.
-for f in "$POOL" "$REDEEM"; do
+# Validate before trusting any of them.
+for f in "$MARKETS" "$POOL" "$REDEEM"; do
   if ! python3 -c "import json,sys; json.load(open('$f'))" 2>/dev/null; then
     log "FATAL: $f is not valid JSON - discarding this run"
-    rm -f "$POOL" "$REDEEM"
+    rm -f "$MARKETS" "$POOL" "$REDEEM"
     exit 1
   fi
 done
@@ -42,11 +44,18 @@ done
 COUNT=$(python3 -c "import json; print(len(json.load(open('$POOL'))['markets']))" 2>/dev/null || echo 0)
 if [ "$COUNT" -lt 1 ]; then
   log "FATAL: pool snapshot contains no markets - discarding this run"
-  rm -f "$POOL" "$REDEEM"
+  rm -f "$MARKETS" "$POOL" "$REDEEM"
   exit 1
 fi
 
-git add "$POOL" "$REDEEM" || exit 1
+# Rebuild the public page from the snapshots just taken.
+if ! python3 site/build.py >>"$LOG" 2>&1; then
+  log "FATAL: site build failed - discarding this run"
+  rm -f "$MARKETS" "$POOL" "$REDEEM"
+  exit 1
+fi
+
+git add "$MARKETS" "$POOL" "$REDEEM" docs/index.html || exit 1
 if git diff --cached --quiet; then
   log "no change since last snapshot - nothing to commit"
   exit 0
