@@ -1,6 +1,6 @@
 {
   "chainId": 4663,
-  "block": "18703866",
+  "block": "18957397",
   "markets": [
     {
       "symbol": "USDe",
@@ -9,76 +9,76 @@
         "fee": 100,
         "tickSpacing": 1
       },
-      "reference_rate_at_10k": 0.999992,
+      "reference_rate_at_10k": 1.000055,
       "ladder": [
         {
           "size_in": 10000,
-          "usdg_out": 9999.92,
+          "usdg_out": 10000.55,
           "slippage_pct": 0.0,
           "status": "OK"
         },
         {
           "size_in": 50000,
-          "usdg_out": 49994.44,
-          "slippage_pct": -0.01,
+          "usdg_out": 49998.08,
+          "slippage_pct": -0.009,
           "status": "OK"
         },
         {
           "size_in": 100000,
-          "usdg_out": 99971.88,
-          "slippage_pct": -0.027,
+          "usdg_out": 99980.29,
+          "slippage_pct": -0.025,
           "status": "OK"
         },
         {
           "size_in": 250000,
-          "usdg_out": 249768.49,
-          "slippage_pct": -0.092,
+          "usdg_out": 249796.05,
+          "slippage_pct": -0.087,
           "status": "OK"
         },
         {
           "size_in": 500000,
-          "usdg_out": 498931.28,
-          "slippage_pct": -0.213,
+          "usdg_out": 498991.77,
+          "slippage_pct": -0.207,
           "status": "OK"
         },
         {
           "size_in": 1000000,
-          "usdg_out": 549890.31,
-          "slippage_pct": -45.011,
+          "usdg_out": 563090.29,
+          "slippage_pct": -43.694,
           "status": "OK"
         },
         {
           "size_in": 2500000,
-          "usdg_out": 549890.33,
-          "slippage_pct": -78.004,
+          "usdg_out": 563090.31,
+          "slippage_pct": -77.478,
           "status": "OK"
         },
         {
           "size_in": 5000000,
-          "usdg_out": 549890.33,
-          "slippage_pct": -89.002,
+          "usdg_out": 563090.31,
+          "slippage_pct": -88.739,
           "status": "OK"
         },
         {
           "size_in": 10000000,
-          "usdg_out": 549890.33,
-          "slippage_pct": -94.501,
+          "usdg_out": 563090.31,
+          "slippage_pct": -94.369,
           "status": "OK"
         },
         {
           "size_in": 50000000,
-          "usdg_out": 549890.33,
-          "slippage_pct": -98.9,
+          "usdg_out": 563090.31,
+          "slippage_pct": -98.874,
           "status": "OK"
         },
         {
           "size_in": 200000000,
-          "usdg_out": 549890.33,
-          "slippage_pct": -99.725,
+          "usdg_out": 563090.31,
+          "slippage_pct": -99.718,
           "status": "OK"
         }
       ],
-      "max_atomic_exit_usdg": 549890.33
+      "max_atomic_exit_usdg": 563090.31
     },
     {
       "symbol": "syrupUSDG",

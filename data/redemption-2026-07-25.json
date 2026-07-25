@@ -1,0 +1,73 @@
+{
+  "chainId": 4663,
+  "block": "18954704",
+  "collateral": [
+    {
+      "symbol": "USDe",
+      "token": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+      "erc4626": false,
+      "layerzero_oft": true,
+      "lz_endpoint": "0x6F475642a6e85809B1c36Fa62763669b1b48DD5B",
+      "local_exit": "BRIDGED",
+      "note": "LayerZero OFT. Redemption to backing requires bridging off Robinhood Chain first - not atomic, not available to a liquidator inside one transaction."
+    },
+    {
+      "symbol": "syrupUSDG",
+      "token": "0x40858070814a57FdF33a613ae84fE0a8b4a874f7",
+      "erc4626": false,
+      "layerzero_oft": false,
+      "local_exit": "NONE_FOUND",
+      "note": "No ERC-4626, proxy, or OFT interface responded. No local redemption path identified; the pool appears to be the only on-chain exit. Absence of evidence, not proof of absence."
+    },
+    {
+      "symbol": "spUSDG",
+      "token": "0xde770c84FE66E063336b31737cFE9790f18c4087",
+      "erc4626": true,
+      "backing_asset": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "backing_is_usdg": true,
+      "total_assets_usdg": 16458521.17,
+      "idle_usdg_in_vault": 16454798.41,
+      "redemption_ladder": [
+        {
+          "redeem_units": 1,
+          "usdg_out": 1.0,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 1000,
+          "usdg_out": 1003.16,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 100000,
+          "usdg_out": 100315.94,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 1000000,
+          "usdg_out": 1003159.39,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 5000000,
+          "usdg_out": 5015796.96,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 10000000,
+          "usdg_out": 10031593.94,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 15000000,
+          "usdg_out": 15047390.92,
+          "status": "OK"
+        }
+      ],
+      "max_verified_redemption_usdg": 15047390.92,
+      "layerzero_oft": false,
+      "local_exit": "REDEEMABLE",
+      "note": "ERC-4626 vault holding USDG locally; redeemable on-chain at size."
+    }
+  ]
+}

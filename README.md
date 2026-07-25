@@ -6,11 +6,26 @@
 
 ---
 
+> ### Correction, 2026-07-25
+>
+> The first version of this README reported chain-wide coverage of **1.08%** and gave spUSDG an exit of **$1,011**. That was wrong. It measured pool depth only, and spUSDG turns out to be an ERC-4626 vault holding its backing on this chain — it can be redeemed directly for roughly **$15.0M**, not sold for $1,011.
+>
+> Corrected figures are below. Chain-wide coverage is **7.40%**, not 1.08%. The finding survives the correction, but it is a different and narrower finding than first published, and it now names the mechanism rather than just a number. The commit history contains both versions.
+
+---
+
 ## The problem
 
-A lending market reports collateral, LLTV, and utilization. None of those tell you the thing that decides whether a liquidation succeeds: **how much of that collateral a liquidator can actually sell before the exit runs dry.**
+A lending market reports collateral, LLTV, and utilization. None of those tell you the thing that decides whether a liquidation succeeds: **how much of that collateral can actually be turned into the loan asset, right now, in one transaction.**
 
-On Robinhood Chain (chain ID `4663`) that question has an unusually hard answer, because a liquidator's venue options are almost entirely closed:
+There are two ways out, and they are not equivalent:
+
+1. **Sell it into a pool.** Bounded by pool depth. Available to any contract.
+2. **Redeem it for its backing.** Bounded by whether the backing is on this chain at all.
+
+Most coverage analysis measures only the first. That understates coverage for assets that can be redeemed, and it says nothing useful unless you check which case applies.
+
+On Robinhood Chain (chain ID `4663`) the selling side is unusually constrained, because a liquidator contract's venue options are almost entirely closed:
 
 | Venue | Callable by a contract? | Why |
 |---|---|---|
@@ -21,46 +36,57 @@ On Robinhood Chain (chain ID `4663`) that question has an unusually hard answer,
 | Meridian | No | RFQ, off-chain order flow |
 | UniswapX | No | Reactor address carries no code on this chain |
 
-So for an automated liquidator, **raw Uniswap v4 is effectively the only exit.** That makes exit capacity measurable — and worth measuring.
+So when redemption is unavailable, **raw Uniswap v4 is the whole exit.**
 
 ---
 
 ## What we measured
 
-Measured 2026-07-25 at block `18703866` on Robinhood Chain mainnet. Every number below is reproducible with the script in `probe/`.
+Robinhood Chain mainnet, 2026-07-25. Pool depth at block `18957397`, redemption paths at block `18954704`. Both reproducible with the scripts in `probe/`.
 
-Morpho on Robinhood Chain carries **$205,661,243** of borrow across 37 markets. Three markets hold effectively all of it:
+Morpho on Robinhood Chain carries **$205,661,243** of borrow across 37 markets. Three markets hold effectively all of it.
 
-| Market | Collateral | Max atomic exit | Coverage |
+| Market | Collateral | Pool exit | Redemption exit | Best exit | Coverage |
+|---|---|---|---|---|---|
+| USDe / USDG | $175,005,841 | $563,090 | — | $563,090 | **0.32%** |
+| syrupUSDG / USDG | $47,129,615 | $2,013,158 | — | $2,013,158 | **4.27%** |
+| spUSDG / USDG | $15,899,540 | $1,011 | **$15,047,391** | $15,047,391 | **94.64%** |
+| **Total** | **$238,034,996** | | | **$17,623,639** | **7.40%** |
+
+### The finding is the split, not the total
+
+The chain-wide 7.40% is an average across two very different situations.
+
+| | Collateral | Exit | Coverage |
 |---|---|---|---|
-| USDe / USDG | $175,005,841 | $549,890 | **0.314%** |
-| syrupUSDG / USDG | $47,129,615 | $2,013,158 | **4.272%** |
-| spUSDG / USDG | $15,899,540 | **$1,011** | **0.0064%** |
-| **Total** | **$238,034,996** | **$2,564,059** | **1.0772%** |
+| Locally redeemable (spUSDG) | $15,899,540 | $15,047,391 | **94.64%** |
+| Bridged, pool-only (USDe + syrupUSDG) | **$222,135,456** | **$2,576,248** | **1.16%** |
 
-**Ratio: 92.8 : 1.** For every dollar that can leave, ninety-two are waiting behind it.
+**$222,135,456 of collateral has no redemption path on this chain and $2,576,248 of pool behind it. That is 86.2 to 1.**
 
-### Where each pool runs dry
+- **spUSDG** is an ERC-4626 vault whose `asset()` is USDG, holding **$16,454,798** of USDG idle against a 16,406,686 supply. `previewRedeem` returns cleanly up to 15,000,000 units. No pause function, no whitelist gate found. Its pool is nearly empty — $1,011 — and that does not matter, because nobody needs the pool.
+- **USDe** is a LayerZero OFT (endpoint `0x6F475642a6e85809B1c36Fa62763669b1b48DD5B`). It is a bridged representation. Redeeming it for backing means leaving Robinhood Chain first, which is not atomic and not something a liquidator can do inside one transaction. Its exit here is the pool.
+- **syrupUSDG** answered no ERC-4626, proxy, or OFT interface we tried. We could not identify a local redemption path. That is absence of evidence, not proof of absence — see limitations.
 
-The exits do not degrade gradually. They stop.
+### Where the pools run dry
+
+The pool exits do not degrade gradually. They stop.
 
 **USDe → USDG** (`fee=100`, `tickSpacing=1`)
 
 | Size in | USDG out | Slippage vs $10k rate |
 |---|---|---|
-| $10,000 | $9,999.92 | 0.00% |
-| $250,000 | $249,768 | −0.09% |
-| $500,000 | $498,931 | −0.21% |
-| $1,000,000 | **$549,890** | **−45.01%** |
-| $2,500,000 | $549,890 | −78.00% |
+| $10,000 | $10,000.55 | 0.00% |
+| $250,000 | $249,796 | −0.09% |
+| $500,000 | $498,992 | −0.21% |
+| $1,000,000 | **$563,090** | **−43.69%** |
+| $2,500,000 | $563,090 | −77.48% |
 
-Past roughly $550k the output stops moving. Additional input buys nothing.
-
-**spUSDG → USDG** (`fee=500`, `tickSpacing=10`) is already exhausted at the smallest size probed: a $10,000 sell returns **$919.79**. The pool holds about **$1,011** in total, against $15.9M of collateral.
+Past roughly $563k the output stops moving. Additional input buys nothing.
 
 ### Two related facts
 
-- **Almost the entire supply of each wrapper is locked as collateral.** spUSDG total supply is 16,018,621 and 15,899,540 of it sits in Morpho — **99.26%**. There is no meaningful float outside the lending market to act as emergency liquidity.
+- **Almost the entire supply of each wrapper is locked as collateral.** spUSDG total supply is 16,406,686 and 15,899,540 of it sits in Morpho — **96.9%**. There is little float outside the lending market to act as emergency liquidity.
 - **Stock tokens are not where the risk is.** Ten stock-collateral markets are deployed on Robinhood Chain. Their combined borrow is **$11.89**. The chain is marketed around tokenized equities; the leverage is entirely in stablecoin wrappers borrowing against themselves at 91.5% LLTV and ~90% utilization.
 
 Reported bad debt across all 37 markets is **$0**. That means the exit has not been tested, not that it is wide.
@@ -72,12 +98,13 @@ Reported bad debt across all 37 markets is **$0**. That means the exit has not b
 Requires [Foundry](https://getfoundry.sh) (`cast`) and Python 3.9+.
 
 ```bash
-python3 probe/exit_depth.py
+python3 probe/exit_depth.py    # pool depth, laddered
+python3 probe/redemption.py    # local redemption paths
 ```
 
-The script ladders sell sizes for each collateral through the Uniswap v4 Quoter on the public Robinhood Chain RPC and reports where output stops responding to input. No API key, no account, no funds.
+Neither script needs an API key, an account, or funds. Both are read-only.
 
-Single-market spot check:
+Single spot check — quote selling 1,000,000 USDe into the pool:
 
 ```bash
 cast call 0x8dc178efb8111bb0973dd9d722ebeff267c98f94 \
@@ -86,7 +113,15 @@ cast call 0x8dc178efb8111bb0973dd9d722ebeff267c98f94 \
   --rpc-url https://rpc.mainnet.chain.robinhood.com
 ```
 
-That quotes selling 1,000,000 USDe. The USDG returned is the ceiling, not a rate.
+The USDG returned is a ceiling, not a rate.
+
+Redemption spot check — preview redeeming 10,000,000 spUSDG:
+
+```bash
+cast call 0xde770c84FE66E063336b31737cFE9790f18c4087 \
+  "previewRedeem(uint256)(uint256)" 10000000000000 \
+  --rpc-url https://rpc.mainnet.chain.robinhood.com
+```
 
 ### Addresses used
 
@@ -106,16 +141,17 @@ RPC: `https://rpc.mainnet.chain.robinhood.com` · Chain ID `4663`
 
 Stated plainly, because they change how the numbers should be read.
 
-1. **Quoted, not executed.** Depth comes from Uniswap v4 Quoter view calls. A quote and a settled swap can disagree when hooks or transfer restrictions are involved. Execution simulation through a router is the next step, and it may move these numbers.
-2. **Swap exits only.** Some collateral may have a non-swap exit — Ethena redemption for USDe, Maple withdrawal for syrupUSDG, protocol unwrap paths. If liquidators use those instead of pools, pool depth is the wrong denominator and coverage is understated. **This is the single strongest objection to everything above, and it is not yet resolved.**
-3. **Point-in-time.** One measurement, one block. Liquidity moves. Coverage is only meaningful as a time series, which starts with `data/`.
-4. **Coverage is not a forecast.** A low ratio says an orderly exit at size is unavailable today. It does not predict a liquidation event, and it says nothing about whether one will occur.
+1. **syrupUSDG's exit is unresolved.** No standard interface responded, so we treat the pool as its only exit. If a redemption path exists that we did not find, its coverage is understated and the bridged-subset number moves. This is the largest open question in the table above.
+2. **Quoted, not executed.** Pool depth comes from Uniswap v4 Quoter view calls and redemption from `previewRedeem`. A quote and a settled transaction can disagree when hooks or transfer restrictions are involved. Execution simulation is the next step.
+3. **Redemption capacity is not static.** spUSDG is redeemable because the vault currently holds the USDG. That balance can be drawn down by other redeemers. Coverage measured once is coverage at one block.
+4. **Point-in-time.** Two blocks, minutes apart. Liquidity moves. Coverage is only meaningful as a time series, which starts in `data/`.
+5. **Coverage is not a forecast.** A low ratio says an orderly exit at size is unavailable today. It does not predict a liquidation event, and it says nothing about whether one will occur.
 
 ---
 
 ## Status
 
-Early. Measuring in public while validating whether anyone needs this measured. Snapshots land in `data/` as they are taken.
+Early. Measuring in public, and correcting in public when the measurement is wrong — see the correction at the top. Snapshots land in `data/` as they are taken.
 
 ## License
 
