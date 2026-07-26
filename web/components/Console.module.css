@@ -111,3 +111,10 @@
   .body { font-size: 10.5px; min-height: 360px; }
   .out { padding-left: 12px; }
 }
+
+/* On a phone the two chrome labels wrap into four lines and read as noise.
+   The reading matters; the plate does not. */
+@media (max-width: 480px) {
+  .meta { display: none; }
+  .chrome { padding: 9px 14px; }
+}

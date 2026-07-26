@@ -40,6 +40,7 @@ tmp/
 web/node_modules/
 web/.next/
 web/.next-build/
+web/.next-dev/
 web/out/
 web/next-env.d.ts
 web/*.tsbuildinfo
