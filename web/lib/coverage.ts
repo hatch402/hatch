@@ -1,4 +1,7 @@
-import summary from "../../data/latest.json";
+// Kept inside web/ on purpose: Vercel builds with this directory as the root
+// and cannot reach above it. site/build.py writes this file and the canonical
+// data/latest.json in the same pass.
+import summary from "../data/latest.json";
 
 export type LadderStep = {
   size_in: number;

@@ -1,0 +1,360 @@
+{
+  "generated_from": {
+    "markets": "markets-2026-07-26.json",
+    "pool": "pool-depth-2026-07-26.json",
+    "redemption": "redemption-2026-07-26.json"
+  },
+  "chain_id": 4663,
+  "pool_block": "19658250",
+  "redemption_block": "19658265",
+  "market_count": 42,
+  "total_borrow_usd": 215477421.12,
+  "total_bad_debt_usd": 0.0,
+  "measured_collateral_usd": 249641899.82,
+  "measured_exit_usd": 17614095.08,
+  "measured_coverage_pct": 7.0557,
+  "bridged_collateral_usd": 232842132.94,
+  "bridged_exit_usd": 2565544.92,
+  "bridged_coverage_pct": 1.1018,
+  "bridged_ratio": 90.76,
+  "markets": [
+    {
+      "symbol": "USDe",
+      "loan": "USDG",
+      "collateral": 184758102.92,
+      "borrow": 159026285.11,
+      "lltv": 91.5,
+      "measured": true,
+      "pool": 552386.77,
+      "redeem": 0,
+      "best": 552386.77,
+      "coverage": 0.29897837294810437,
+      "mechanism": "BRIDGED",
+      "mechanism_label": "bridged",
+      "mechanism_note": "LayerZero OFT. Redemption requires leaving this chain."
+    },
+    {
+      "symbol": "syrupUSDG",
+      "loan": "USDG",
+      "collateral": 48084030.02,
+      "borrow": 42532018.23,
+      "lltv": 91.5,
+      "measured": true,
+      "pool": 2013158.15,
+      "redeem": 0,
+      "best": 2013158.15,
+      "coverage": 4.186750048119198,
+      "mechanism": "BRIDGE_MINTED",
+      "mechanism_label": "bridge-minted",
+      "mechanism_note": "Single mint/burn authority holding no backing here."
+    },
+    {
+      "symbol": "spUSDG",
+      "loan": "USDG",
+      "collateral": 16799766.88,
+      "borrow": 13909031.17,
+      "lltv": 91.5,
+      "measured": true,
+      "pool": 1010.58,
+      "redeem": 15048550.16,
+      "best": 15048550.16,
+      "coverage": 89.57594630622637,
+      "mechanism": "REDEEMABLE",
+      "mechanism_label": "redeemable",
+      "mechanism_note": "Backing held on this chain; redeemable at size."
+    },
+    {
+      "symbol": "wsNET",
+      "loan": "USDG",
+      "collateral": 0.0,
+      "borrow": 10058.07,
+      "lltv": 62.5,
+      "measured": false,
+      "mechanism_label": "",
+      "mechanism_note": ""
+    }
+  ],
+  "ladders": {
+    "USDe": [
+      {
+        "size_in": 10000,
+        "usdg_out": 9999.92,
+        "slippage_pct": 0.0,
+        "status": "OK"
+      },
+      {
+        "size_in": 50000,
+        "usdg_out": 49996.46,
+        "slippage_pct": -0.006,
+        "status": "OK"
+      },
+      {
+        "size_in": 100000,
+        "usdg_out": 99978.4,
+        "slippage_pct": -0.021,
+        "status": "OK"
+      },
+      {
+        "size_in": 250000,
+        "usdg_out": 249775.81,
+        "slippage_pct": -0.089,
+        "status": "OK"
+      },
+      {
+        "size_in": 500000,
+        "usdg_out": 498939.86,
+        "slippage_pct": -0.211,
+        "status": "OK"
+      },
+      {
+        "size_in": 1000000,
+        "usdg_out": 550390.45,
+        "slippage_pct": -44.961,
+        "status": "OK"
+      },
+      {
+        "size_in": 2500000,
+        "usdg_out": 550390.46,
+        "slippage_pct": -77.984,
+        "status": "OK"
+      },
+      {
+        "size_in": 5000000,
+        "usdg_out": 550390.47,
+        "slippage_pct": -88.992,
+        "status": "OK"
+      },
+      {
+        "size_in": 10000000,
+        "usdg_out": 550390.47,
+        "slippage_pct": -94.496,
+        "status": "OK"
+      },
+      {
+        "size_in": 50000000,
+        "usdg_out": 550390.47,
+        "slippage_pct": -98.899,
+        "status": "OK"
+      },
+      {
+        "size_in": 200000000,
+        "usdg_out": 550390.47,
+        "slippage_pct": -99.725,
+        "status": "OK"
+      }
+    ],
+    "syrupUSDG": [
+      {
+        "size_in": 10000,
+        "usdg_out": 10028.6,
+        "slippage_pct": 0.0,
+        "status": "OK"
+      },
+      {
+        "size_in": 50000,
+        "usdg_out": 50136.35,
+        "slippage_pct": -0.013,
+        "status": "OK"
+      },
+      {
+        "size_in": 100000,
+        "usdg_out": 100256.03,
+        "slippage_pct": -0.03,
+        "status": "OK"
+      },
+      {
+        "size_in": 250000,
+        "usdg_out": 250515.22,
+        "slippage_pct": -0.08,
+        "status": "OK"
+      },
+      {
+        "size_in": 500000,
+        "usdg_out": 500614.83,
+        "slippage_pct": -0.163,
+        "status": "OK"
+      },
+      {
+        "size_in": 1000000,
+        "usdg_out": 999571.38,
+        "slippage_pct": -0.328,
+        "status": "OK"
+      },
+      {
+        "size_in": 2500000,
+        "usdg_out": 2013158.15,
+        "slippage_pct": -19.703,
+        "status": "OK"
+      },
+      {
+        "size_in": 5000000,
+        "usdg_out": 2013158.15,
+        "slippage_pct": -59.852,
+        "status": "OK"
+      },
+      {
+        "size_in": 10000000,
+        "usdg_out": 2013158.15,
+        "slippage_pct": -79.926,
+        "status": "OK"
+      },
+      {
+        "size_in": 50000000,
+        "usdg_out": 2013158.15,
+        "slippage_pct": -95.985,
+        "status": "OK"
+      },
+      {
+        "size_in": 200000000,
+        "usdg_out": 2013158.15,
+        "slippage_pct": -98.996,
+        "status": "OK"
+      }
+    ],
+    "spUSDG": [
+      {
+        "size_in": 10000,
+        "usdg_out": 919.79,
+        "slippage_pct": 0.0,
+        "status": "OK"
+      },
+      {
+        "size_in": 50000,
+        "usdg_out": 991.02,
+        "slippage_pct": -78.451,
+        "status": "OK"
+      },
+      {
+        "size_in": 100000,
+        "usdg_out": 1000.7,
+        "slippage_pct": -89.12,
+        "status": "OK"
+      },
+      {
+        "size_in": 250000,
+        "usdg_out": 1006.61,
+        "slippage_pct": -95.622,
+        "status": "OK"
+      },
+      {
+        "size_in": 500000,
+        "usdg_out": 1008.59,
+        "slippage_pct": -97.807,
+        "status": "OK"
+      },
+      {
+        "size_in": 1000000,
+        "usdg_out": 1009.59,
+        "slippage_pct": -98.902,
+        "status": "OK"
+      },
+      {
+        "size_in": 2500000,
+        "usdg_out": 1010.18,
+        "slippage_pct": -99.561,
+        "status": "OK"
+      },
+      {
+        "size_in": 5000000,
+        "usdg_out": 1010.38,
+        "slippage_pct": -99.78,
+        "status": "OK"
+      },
+      {
+        "size_in": 10000000,
+        "usdg_out": 1010.48,
+        "slippage_pct": -99.89,
+        "status": "OK"
+      },
+      {
+        "size_in": 50000000,
+        "usdg_out": 1010.56,
+        "slippage_pct": -99.978,
+        "status": "OK"
+      },
+      {
+        "size_in": 200000000,
+        "usdg_out": 1010.58,
+        "slippage_pct": -99.995,
+        "status": "OK"
+      }
+    ]
+  },
+  "redemption_detail": {
+    "USDe": {
+      "symbol": "USDe",
+      "token": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+      "erc4626": false,
+      "layerzero_oft": true,
+      "lz_endpoint": "0x6F475642a6e85809B1c36Fa62763669b1b48DD5B",
+      "access_control_mint_burn": false,
+      "local_exit": "BRIDGED",
+      "note": "LayerZero OFT. Redemption to backing requires bridging off Robinhood Chain first - not atomic, not available to a liquidator inside one transaction."
+    },
+    "syrupUSDG": {
+      "symbol": "syrupUSDG",
+      "token": "0x40858070814a57FdF33a613ae84fE0a8b4a874f7",
+      "erc4626": false,
+      "layerzero_oft": false,
+      "access_control_mint_burn": true,
+      "minter_role": "0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6",
+      "burner_role": "0x3c11d16cbaffd01df69ce1c404f6340ee057498f5f00246190ea54220576a848",
+      "mint_authority": "0x01fa676ecc8662e6923fdf06ba5278a96ccd725c",
+      "mint_authority_usdg_balance": 0.0,
+      "local_exit": "BRIDGE_MINTED",
+      "note": "AccessControl ERC-20 with a single mint/burn authority holding 0.0 USDG. Burning destroys the token here; any credit is issued on another chain, asynchronously. With no backing held locally there is nothing to redeem against, so the pool is the only atomic exit."
+    },
+    "spUSDG": {
+      "symbol": "spUSDG",
+      "token": "0xde770c84FE66E063336b31737cFE9790f18c4087",
+      "erc4626": true,
+      "backing_asset": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
+      "backing_is_usdg": true,
+      "total_assets_usdg": 16933051.83,
+      "idle_usdg_in_vault": 16929385.93,
+      "redemption_ladder": [
+        {
+          "redeem_units": 1,
+          "usdg_out": 1.0,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 1000,
+          "usdg_out": 1003.24,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 100000,
+          "usdg_out": 100323.67,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 1000000,
+          "usdg_out": 1003236.67,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 5000000,
+          "usdg_out": 5016183.38,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 10000000,
+          "usdg_out": 10032366.77,
+          "status": "OK"
+        },
+        {
+          "redeem_units": 15000000,
+          "usdg_out": 15048550.16,
+          "status": "OK"
+        }
+      ],
+      "max_verified_redemption_usdg": 15048550.16,
+      "max_is_a_floor_not_a_ceiling": false,
+      "layerzero_oft": false,
+      "access_control_mint_burn": false,
+      "local_exit": "REDEEMABLE",
+      "note": "ERC-4626 vault holding USDG locally; redeemable on-chain at size."
+    }
+  }
+}

@@ -307,7 +307,16 @@ python3 probe/redemption.py   # local redemption paths</pre>
         "ladders": {m["symbol"]: m.get("ladder", []) for m in pool_doc["markets"]},
         "redemption_detail": {c["symbol"]: c for c in redeem_doc["collateral"]},
     }
-    (DATA / "latest.json").write_text(json.dumps(summary, indent=2))
+    payload = json.dumps(summary, indent=2)
+    (DATA / "latest.json").write_text(payload)
+
+    # A second copy inside web/. Vercel builds with the root directory set to
+    # web/ and no longer offers the option to include files above it, so an
+    # import reaching outside would break the deploy. Both files are written
+    # from the same computation in the same run, so they cannot drift.
+    web_data = ROOT / "web" / "data"
+    web_data.mkdir(parents=True, exist_ok=True)
+    (web_data / "latest.json").write_text(payload)
     print(f"wrote {OUT.relative_to(ROOT)} — {len(rows)} markets, "
           f"{overall:.2f}% overall, bridged {bridged_pct:.2f}% ({bridged_ratio:.1f}:1)")
 
