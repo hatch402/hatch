@@ -121,8 +121,8 @@ export default function Home() {
               <a className={styles.link} href="https://github.com/lastoutxyz/lastout-x402">
                 Source and daily snapshots →
               </a>
-              <a className={styles.link} href="https://x.com/lastout_xyz">
-                @lastout_xyz →
+              <a className={styles.link} href="https://x.com/lastoutxyz">
+                @lastoutxyz →
               </a>
             </div>
           </div>

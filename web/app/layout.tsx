@@ -32,7 +32,7 @@ export const metadata: Metadata = {
       "How much lending collateral on Robinhood Chain can actually exit on-chain.",
     type: "website",
   },
-  twitter: { card: "summary_large_image", site: "@lastout_xyz" },
+  twitter: { card: "summary_large_image", site: "@lastoutxyz" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
