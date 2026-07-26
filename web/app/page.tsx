@@ -1,6 +1,8 @@
 import Console from "../components/Console";
 import Placard from "../components/Placard";
 import Markets from "../components/Markets";
+import Ladder from "../components/Ladder";
+import Link from "next/link";
 import Reveal from "../components/Reveal";
 import { coverage } from "../lib/coverage";
 import styles from "./page.module.css";
@@ -62,6 +64,8 @@ export default function Home() {
         </section>
       </Reveal>
 
+      <Ladder />
+
       <Reveal>
         <section className={styles.section} id="mechanism">
           <div className="shell">
@@ -121,6 +125,9 @@ export default function Home() {
               <a className={styles.link} href="https://github.com/lastoutxyz/lastout-x402">
                 Source and daily snapshots →
               </a>
+              <Link className={styles.link} href="/docs">
+                Method in full →
+              </Link>
               <a className={styles.link} href="https://x.com/lastoutxyz">
                 @lastoutxyz →
               </a>

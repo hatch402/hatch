@@ -1,0 +1,72 @@
+.scroller { position: relative; }
+
+.sticky {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 80px 0;
+  border-top: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.title { font-size: clamp(30px, 5vw, 58px); margin: 14px 0 34px; }
+.quiet { color: var(--faint); }
+
+.readout {
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(13px, 1.7vw, 17px);
+  margin-bottom: 40px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 5.5rem) 1.6rem minmax(0, 6rem) minmax(0, 5rem);
+  gap: 10px;
+  align-items: baseline;
+  padding: 4px 0;
+  white-space: nowrap;
+}
+
+.size { font-weight: 700; text-align: right; }
+.arrow { color: var(--faint); text-align: center; }
+.got { font-weight: 700; text-align: right; }
+.slip { color: var(--faint); text-align: right; font-size: 0.82em; }
+.brokenText { color: var(--ember); }
+
+.bars { display: grid; gap: 14px; margin-bottom: 22px; }
+
+.barRow { display: grid; grid-template-columns: 5.5rem 1fr; gap: 14px; align-items: center; }
+
+.track {
+  height: 26px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.in { display: block; height: 100%; background: var(--rule-strong); }
+.out { display: block; height: 100%; background: var(--amber); }
+
+.caption {
+  font-size: 13px;
+  color: var(--faint);
+  max-width: var(--measure);
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .barRow { grid-template-columns: 4.2rem 1fr; gap: 10px; }
+  .row { grid-template-columns: minmax(0, 4.6rem) 1.1rem minmax(0, 5rem) minmax(0, 4rem); gap: 7px; }
+  .sticky { padding: 56px 0; }
+}
+
+/* Without scroll-driven motion the section is a static ladder, which still
+   reads correctly - the last row is the one that matters. */
+@media (prefers-reduced-motion: reduce) {
+  .scroller { height: auto !important; }
+  .sticky { position: static; min-height: 0; }
+  .row { opacity: 1 !important; }
+}

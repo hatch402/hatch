@@ -1,0 +1,77 @@
+.page { padding: clamp(44px, 6vw, 80px) 0 60px; max-width: 860px; }
+
+.h1 { font-size: clamp(32px, 5.4vw, 62px); margin: 14px 0 22px; }
+
+.lede { font-size: 17px; color: var(--graphite); max-width: var(--measure); margin: 0 0 8px; }
+
+.section { margin-top: 46px; }
+
+.h2 {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-stretch: 125%;
+  text-transform: uppercase;
+  font-size: 17px;
+  letter-spacing: -0.005em;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.body { font-size: 15px; color: var(--graphite); max-width: var(--measure); margin: 0 0 14px; }
+
+.defs { margin: 0; }
+.defs dt {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--amber);
+  margin-top: 18px;
+}
+.defs dd {
+  margin: 5px 0 0;
+  font-size: 14.5px;
+  color: var(--graphite);
+  max-width: var(--measure);
+}
+
+.addrs { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+.addr {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 11px 15px;
+  background: #fff;
+}
+.addrName { font-size: 13px; color: var(--graphite); }
+.addrHex { font-family: var(--font-mono), monospace; font-size: 11.5px; word-break: break-all; }
+
+.pre {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 15px;
+  overflow-x: auto;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 0 0 14px;
+}
+
+.list { padding-left: 20px; max-width: var(--measure); }
+.list li { font-size: 14.5px; color: var(--graphite); margin-bottom: 12px; }
+.list b { color: var(--ink); }
+
+.small { font-size: 12.5px; color: var(--faint); margin-top: 12px; }
+
+.page code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.86em;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 1px 5px;
+}
+.pre code, .addrHex { background: none; border: 0; padding: 0; }
