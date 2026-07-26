@@ -35,3 +35,11 @@ Thumbs.db
 scratch/
 tmp/
 *.log
+
+# Next.js
+web/node_modules/
+web/.next/
+web/.next-build/
+web/out/
+web/next-env.d.ts
+web/*.tsbuildinfo

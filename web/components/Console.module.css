@@ -1,0 +1,113 @@
+/* A light console. Terminals are dark by convention, but LASTOUT is an
+   instrument that prints a reading, not a shell you hack in — so this reads
+   as a printout: paper, a fixed platen, ink. */
+
+.console {
+  border: 1px solid var(--rule-strong);
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 var(--rule);
+  cursor: text;
+  overflow: hidden;
+}
+
+.chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--panel);
+}
+
+.label,
+.meta {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.label { color: var(--ink); font-weight: 700; }
+.meta { color: var(--faint); }
+
+.body {
+  padding: 18px 16px 16px;
+  min-height: 430px;
+  max-height: 520px;
+  overflow-y: auto;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.85;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.prompt {
+  color: var(--amber);
+  font-weight: 700;
+  flex: none;
+  user-select: none;
+}
+
+.cmd {
+  color: var(--ink);
+  font-weight: 700;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: 1em;
+  margin-left: 1px;
+  background: var(--amber);
+  vertical-align: text-bottom;
+  animation: blink 1.05s steps(1) infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--ink);
+  font-weight: 700;
+  padding: 0;
+}
+
+.input::placeholder { color: #C9C6BC; font-weight: 400; }
+
+.out {
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding-left: 20px;
+  color: var(--ink);
+  animation: settle 0.26s ease-out both;
+}
+
+@keyframes settle {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: none; }
+}
+
+.dim { color: var(--faint); }
+.ink { color: var(--ink); }
+.amber { color: var(--amber); font-weight: 700; }
+.ember { color: var(--ember); font-weight: 700; }
+
+/* Long command lines in last/proof must not force the page to scroll sideways. */
+@media (max-width: 720px) {
+  .body { font-size: 10.5px; min-height: 360px; }
+  .out { padding-left: 12px; }
+}

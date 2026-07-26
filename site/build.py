@@ -279,6 +279,35 @@ python3 probe/redemption.py   # local redemption paths</pre>
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(html)
+
+    # One joined document so every surface reads the same numbers. The static
+    # page above and the web app both consume this rather than re-deriving the
+    # join, which is how two surfaces start disagreeing.
+    summary = {
+        "generated_from": {"markets": markets_file, "pool": pool_file, "redemption": redeem_file},
+        "chain_id": 4663,
+        "pool_block": pool_doc.get("block"),
+        "redemption_block": redeem_doc.get("block"),
+        "market_count": markets_doc.get("market_count"),
+        "total_borrow_usd": markets_doc.get("total_borrow_usd"),
+        "total_bad_debt_usd": markets_doc.get("total_bad_debt_usd"),
+        "measured_collateral_usd": round(measured_collateral, 2),
+        "measured_exit_usd": round(measured_exit, 2),
+        "measured_coverage_pct": round(overall, 4),
+        "bridged_collateral_usd": round(bridged_collateral, 2),
+        "bridged_exit_usd": round(bridged_exit, 2),
+        "bridged_coverage_pct": round(bridged_pct, 4),
+        "bridged_ratio": round(bridged_ratio, 2),
+        "markets": [
+            {**row,
+             "mechanism_label": MECHANISM_LABEL.get(row.get("mechanism", ""), ("", ""))[0],
+             "mechanism_note": MECHANISM_LABEL.get(row.get("mechanism", ""), ("", ""))[1]}
+            for row in rows
+        ],
+        "ladders": {m["symbol"]: m.get("ladder", []) for m in pool_doc["markets"]},
+        "redemption_detail": {c["symbol"]: c for c in redeem_doc["collateral"]},
+    }
+    (DATA / "latest.json").write_text(json.dumps(summary, indent=2))
     print(f"wrote {OUT.relative_to(ROOT)} — {len(rows)} markets, "
           f"{overall:.2f}% overall, bridged {bridged_pct:.2f}% ({bridged_ratio:.1f}:1)")
 

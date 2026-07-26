@@ -1,0 +1,60 @@
+.placard { margin-top: 30px; }
+
+.row { margin-bottom: 42px; }
+.row:last-of-type { margin-bottom: 26px; }
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.pct {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--graphite);
+}
+.warn { color: var(--amber); }
+
+.track {
+  height: 46px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+  min-width: 3px;
+}
+
+.fill { height: 100%; background: var(--rule-strong); }
+.fillWarn { background: var(--amber); }
+
+.figures {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  margin-top: 11px;
+  flex-wrap: wrap;
+}
+
+.big {
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.exit {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  color: var(--graphite);
+}
+
+.caption {
+  font-size: 13px;
+  color: var(--faint);
+  max-width: var(--measure);
+  margin: 0;
+}
