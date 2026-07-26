@@ -75,7 +75,14 @@ git commit -q -m "Coverage snapshot ${DATE} (block ${BLOCK})" || { log "commit f
 
 # gh may be pointed at another account; borrow it and hand it back.
 PREV="$(gh auth status 2>&1 | grep -B1 'Active account: true' | grep -o 'account [A-Za-z0-9_-]*' | awk '{print $2}' | head -1)"
-gh auth switch --hostname github.com --user lastoutxyz >/dev/null 2>&1
+# gh caches the login name from when the token was issued, so a GitHub
+# username change leaves it pointing at the old one. Try both.
+for candidate in lastoutlabs lastoutxyz; do
+  if gh auth switch --hostname github.com --user "$candidate" >/dev/null 2>&1; then
+    log "gh account -> $candidate"
+    break
+  fi
+done
 
 if git push -q 2>>"$LOG"; then
   log "pushed snapshot for ${DATE} at block ${BLOCK}"
@@ -83,7 +90,7 @@ else
   log "push failed - commit is local, will go out with the next run"
 fi
 
-if [ -n "$PREV" ] && [ "$PREV" != "lastoutxyz" ]; then
+if [ -n "$PREV" ] && [ "$PREV" != "lastoutlabs" ] && [ "$PREV" != "lastoutxyz" ]; then
   gh auth switch --hostname github.com --user "$PREV" >/dev/null 2>&1
   log "restored gh account to ${PREV}"
 fi

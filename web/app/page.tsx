@@ -148,7 +148,7 @@ export default function Home() {
               what it gives you into a terminal. If our number is wrong, that is how you find out.
             </p>
             <div className={styles.links}>
-              <a className={styles.link} href="https://github.com/lastoutxyz/lastout-x402">
+              <a className={styles.link} href="https://github.com/lastoutlabs/lastout-x402">
                 Source and daily snapshots →
               </a>
               <Link className={styles.link} href="/docs">
