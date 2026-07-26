@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Nav from "../../components/Nav";
 import { coverage, usd } from "../../lib/coverage";
 import styles from "../page.module.css";
 import docs from "./docs.module.css";
@@ -22,14 +23,7 @@ export default function Docs() {
   const c = coverage;
   return (
     <main>
-      <header className={styles.bar}>
-        <div className={`shell ${styles.barInner}`}>
-          <Link href="/" className={styles.wordmark}>
-            LAST<b>OUT</b>
-          </Link>
-          <span className="stamp">Method</span>
-        </div>
-      </header>
+      <Nav block={false} />
 
       <div className={`shell ${docs.page}`}>
         <p className="stamp">Method</p>

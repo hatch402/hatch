@@ -3,6 +3,8 @@ import Placard from "../components/Placard";
 import Markets from "../components/Markets";
 import Ladder from "../components/Ladder";
 import Evidence from "../components/Evidence";
+import Nav from "../components/Nav";
+import Gauge from "../components/Gauge";
 import Link from "next/link";
 import Reveal from "../components/Reveal";
 import { coverage } from "../lib/coverage";
@@ -13,16 +15,7 @@ export default function Home() {
 
   return (
     <main>
-      <header className={styles.bar}>
-        <div className={`shell ${styles.barInner}`}>
-          <span className={styles.wordmark}>
-            LAST<b>OUT</b>
-          </span>
-          <span className="stamp">
-            CHAIN 4663 · POOL {c.pool_block} · REDEMPTION {c.redemption_block}
-          </span>
-        </div>
-      </header>
+      <Nav />
 
       <section className={styles.hero}>
         <div className="shell">
@@ -43,8 +36,9 @@ export default function Home() {
             </p>
             <p className={styles.sub}>
               Bad debt across these markets is currently zero. Coverage is not a forecast; it is the
-              width of the door as of the block stamped above.
+              width of the door as of block {c.pool_block}.
             </p>
+            <Gauge />
           </div>
 
           <div className={styles.heroConsole}>

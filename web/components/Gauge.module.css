@@ -1,0 +1,59 @@
+/* The one-look element. Before reading a word, the reader should see one
+   quantity that dwarfs another. Everything else on the page elaborates this. */
+.gauge { margin-top: 30px; }
+
+.row { margin-bottom: 14px; }
+.row:last-of-type { margin-bottom: 0; }
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.name {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--graphite);
+}
+
+.value {
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(15px, 2.1vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.value.warn { color: var(--amber); }
+
+.track {
+  height: 18px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.fill { display: block; height: 100%; background: var(--rule-strong); }
+.fill.warn { background: var(--amber); }
+
+.foot {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.ratio {
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ember);
+}
+
+.ratioNote { font-size: 12.5px; color: var(--faint); }
