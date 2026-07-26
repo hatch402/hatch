@@ -5,6 +5,7 @@ import Ladder from "../components/Ladder";
 import Evidence from "../components/Evidence";
 import Nav from "../components/Nav";
 import Gauge from "../components/Gauge";
+import Api from "../components/Api";
 import Link from "next/link";
 import Reveal from "../components/Reveal";
 import { coverage } from "../lib/coverage";
@@ -123,6 +124,20 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
+        <section className={styles.section} id="api">
+          <div className="shell">
+            <p className="stamp">For machines</p>
+            <h2 className={`display ${styles.h2}`}>Priced per question, paid onchain</h2>
+            <p className={styles.lede}>
+              An agent sizing a trade, or a curator sizing a market, needs one thing this page
+              cannot give: the answer for <em>their</em> size. That is what the endpoint is for.
+            </p>
+            <Api />
+          </div>
+        </section>
+      </Reveal>
+
+      <Reveal>
         <section className={styles.section} id="verify">
           <div className="shell">
             <p className="stamp">Check it yourself</p>
@@ -139,8 +154,8 @@ export default function Home() {
               <Link className={styles.link} href="/docs">
                 Method in full →
               </Link>
-              <a className={styles.link} href="https://x.com/lastoutxyz">
-                @lastoutxyz →
+              <a className={styles.link} href="https://x.com/lastoutlabs">
+                @lastoutlabs →
               </a>
             </div>
           </div>
