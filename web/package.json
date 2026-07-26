@@ -10,7 +10,8 @@
     "framer-motion": "11.18.2",
     "next": "^15.1.11",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "viem": "^2.21.55"
   },
   "devDependencies": {
     "@types/node": "22.13.1",
