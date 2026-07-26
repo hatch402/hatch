@@ -2,6 +2,7 @@ import Console from "../components/Console";
 import Placard from "../components/Placard";
 import Markets from "../components/Markets";
 import Ladder from "../components/Ladder";
+import Evidence from "../components/Evidence";
 import Link from "next/link";
 import Reveal from "../components/Reveal";
 import { coverage } from "../lib/coverage";
@@ -93,6 +94,21 @@ export default function Home() {
                 </p>
               </article>
             </div>
+          </div>
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section className={styles.section} id="evidence">
+          <div className="shell">
+            <p className="stamp">Not an assumption</p>
+            <h2 className={`display ${styles.h2}`}>Seven liquidations have already run here</h2>
+            <p className={styles.lede}>
+              Coverage assumes a liquidator converts seized collateral through a pool, atomically.
+              That does not have to be assumed. Morpho has processed seven liquidations on this
+              chain, and one of them shows the whole sequence.
+            </p>
+            <Evidence />
           </div>
         </section>
       </Reveal>
