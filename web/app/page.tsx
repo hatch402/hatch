@@ -38,7 +38,7 @@ export default function Home() {
             <p className={styles.lede}>
               A lending market reports collateral, LLTV and utilization. None of them tell you
               whether a liquidator can actually get out. We measure the exit — every day, against
-              the only venue a contract can call on this chain.
+              the venues a contract can actually reach on this chain.
             </p>
             <p className={styles.sub}>
               Bad debt across these markets is currently zero. Coverage is not a forecast; it is the
@@ -83,9 +83,10 @@ export default function Home() {
               <article className={`${styles.door} ${styles.doorShut}`}>
                 <h3 className={styles.doorTitle}>Sell it</h3>
                 <p className={styles.doorBody}>
-                  If the backing lives elsewhere, the only move is a pool. Raw Uniswap v4 is the one
-                  venue a contract can call here — 0x rejects these assets, Arcus and Lighter sign
-                  orders off-chain, the UniswapX reactor carries no code.
+                  If the backing lives elsewhere, the only move is a pool. A contract can reach
+                  Uniswap v4 and a v2 factory here, and nothing else — 0x rejects these assets,
+                  Arcus and Lighter take orders signed off-chain, the UniswapX reactor carries no
+                  code. Both are measured; for these assets v2 holds about $2,000.
                 </p>
                 <p className={styles.doorNote}>
                   USDe and syrupUSDG are in this column. It is the whole exit.

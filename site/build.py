@@ -237,9 +237,9 @@ footer{{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:
   <p class="head">What this measures</p>
   <p>A liquidator has two ways to turn seized collateral into the loan asset: sell it into a pool, or
   redeem it for its backing. Coverage is the larger of the two, capped at the collateral itself.</p>
-  <p>On Robinhood Chain the selling side is unusually narrow. Raw Uniswap v4 is the only venue a
-  contract can call &mdash; 0x rejects these assets, Arcus and Lighter sign orders off-chain, and the
-  UniswapX reactor carries no code here. So when redemption is unavailable, the pool is the whole exit.</p>
+  <p>On Robinhood Chain the selling side is unusually narrow. A contract can reach Uniswap v4 and a
+  v2 factory, and nothing else &mdash; 0x rejects these assets, Arcus and Lighter take orders signed
+  off-chain, and the UniswapX reactor carries no code here. Both venues are measured.</p>
   <p>Markets marked <em>not measured</em> have exposure but no probe yet. They are never counted as covered.</p>
 </section>
 

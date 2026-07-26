@@ -30,13 +30,14 @@ On Robinhood Chain (chain ID `4663`) the selling side is unusually constrained, 
 | Venue | Callable by a contract? | Why |
 |---|---|---|
 | Uniswap v4 (raw pools) | **Yes** | Direct `PoolManager` calls |
+| Uniswap v2 (factory `0x8bcEaA40…`) | **Yes** | Live here, and used in a real liquidation on this chain |
 | 0x Swap API | No | Returns `TOKEN_NOT_AUTHORIZED_FOR_TRADE` for stock tokens |
 | Arcus | No | Orders signed off-chain via embedded wallet; geo/key gated |
 | Lighter | No | Orders signed off-chain to a sequencer |
 | Meridian | No | RFQ, off-chain order flow |
 | UniswapX | No | Reactor address carries no code on this chain |
 
-So when redemption is unavailable, **raw Uniswap v4 is the whole exit.**
+So when redemption is unavailable, the pools are the whole exit.
 
 ---
 

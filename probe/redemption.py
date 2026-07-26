@@ -15,11 +15,37 @@ Requires `cast` (Foundry) and Python 3.9+.
 """
 
 import json
+import os
 import subprocess
 import time
 
-RPC = "https://rpc.mainnet.chain.robinhood.com"
+PUBLIC_RPC = "https://rpc.mainnet.chain.robinhood.com"
 USDG = "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"  # 6 decimals
+
+
+def _resolve_rpc():
+    """Pick an endpoint that actually answers.
+
+    The public RPC is preferred because every command printed on the site uses
+    it and must work for anyone. But some networks cert-block
+    *.chain.robinhood.com, so fall back to whatever RHC_RPC points at. The
+    fallback is read from the environment and never written to disk.
+    """
+    candidates = [c for c in (PUBLIC_RPC, os.environ.get("RHC_RPC")) if c]
+    for endpoint in candidates:
+        probe = subprocess.run(
+            ["cast", "call", USDG, "decimals()(uint8)", "--rpc-url", endpoint],
+            capture_output=True, text=True, timeout=25,
+        )
+        if probe.returncode == 0 and probe.stdout.strip():
+            return endpoint
+    raise SystemExit(
+        "no reachable RPC. Set RHC_RPC to an endpoint that answers, or check "
+        "whether this network blocks *.chain.robinhood.com."
+    )
+
+
+RPC = _resolve_rpc()
 
 COLLATERAL = {
     "USDe": ("0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34", 18),

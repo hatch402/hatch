@@ -93,10 +93,13 @@ export default function Docs() {
             ceiling rather than a rate.
           </p>
           <p className={docs.body}>
-            Raw Uniswap v4 is used because it is the only venue a contract can call on this chain.
-            0x returns <code>TOKEN_NOT_AUTHORIZED_FOR_TRADE</code> for these assets, Arcus and
+            Two venues are reachable from a contract on this chain: Uniswap v4, and a v2 factory
+            at <code>0x8bcEaA40B9AcdfAedF85AdF4FF01F5Ad6517937f</code> that was used in a real
+            liquidation here. Both are measured and summed, since a liquidator can hit both in one
+            transaction. For these three assets the v2 side currently holds about $2,000. Nothing
+            else is reachable: 0x returns <code>TOKEN_NOT_AUTHORIZED_FOR_TRADE</code>, Arcus and
             Lighter take orders signed off-chain, Meridian is RFQ, and the UniswapX reactor address
-            carries no code here.
+            carries no code.
           </p>
         </section>
 

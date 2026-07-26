@@ -25,6 +25,15 @@ export PATH="$HOME/.foundry/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 command -v cast >/dev/null 2>&1 || { log "FATAL: cast not on PATH"; exit 1; }
 
+# Some networks cert-block *.chain.robinhood.com, which turns every probe into a
+# silent zero. Hand the probes a fallback endpoint; they prefer the public RPC
+# and only use this if it does not answer. Never committed - read from .env.
+ENV_FILE="$HOME/builder-track/.env"
+if [ -z "${RHC_RPC:-}" ] && [ -f "$ENV_FILE" ]; then
+  RHC_RPC="$(grep -E '^ALCHEMY_RHC_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"'"'"'\'"'"' ')"
+  export RHC_RPC
+fi
+
 log "snapshot start"
 
 python3 probe/markets.py    > "$MARKETS" 2>>"$LOG"
