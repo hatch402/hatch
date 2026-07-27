@@ -1,8 +1,8 @@
-# LASTOUT
+# HATCH
 
 **Liquidation coverage for Robinhood Chain.** We measure how much collateral can actually exit on-chain.
 
-> Don't be last out.
+> Check the hatch before you need it.
 
 ---
 

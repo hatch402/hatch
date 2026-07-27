@@ -1,34 +1,34 @@
 {
   "generated_from": {
-    "markets": "markets-2026-07-26.json",
-    "pool": "pool-depth-2026-07-26.json",
-    "redemption": "redemption-2026-07-26.json"
+    "markets": "markets-2026-07-27.json",
+    "pool": "pool-depth-2026-07-27.json",
+    "redemption": "redemption-2026-07-27.json"
   },
   "chain_id": 4663,
-  "pool_block": "19658250",
-  "redemption_block": "19658265",
-  "market_count": 42,
-  "total_borrow_usd": 215477421.12,
+  "pool_block": "20323271",
+  "redemption_block": "20323297",
+  "market_count": 43,
+  "total_borrow_usd": 216752309.21,
   "total_bad_debt_usd": 0.0,
-  "measured_collateral_usd": 249641899.82,
-  "measured_exit_usd": 17614095.08,
-  "measured_coverage_pct": 7.0557,
-  "bridged_collateral_usd": 232842132.94,
-  "bridged_exit_usd": 2565544.92,
-  "bridged_coverage_pct": 1.1018,
-  "bridged_ratio": 90.76,
+  "measured_collateral_usd": 250517635.69,
+  "measured_exit_usd": 17600303.06,
+  "measured_coverage_pct": 7.0256,
+  "bridged_collateral_usd": 233225774.95,
+  "bridged_exit_usd": 2550642.83,
+  "bridged_coverage_pct": 1.0936,
+  "bridged_ratio": 91.44,
   "markets": [
     {
       "symbol": "USDe",
       "loan": "USDG",
-      "collateral": 184758102.92,
-      "borrow": 159026285.11,
+      "collateral": 184300804.4,
+      "borrow": 159050511.79,
       "lltv": 91.5,
       "measured": true,
-      "pool": 552386.77,
+      "pool": 508080.05,
       "redeem": 0,
-      "best": 552386.77,
-      "coverage": 0.29897837294810437,
+      "best": 508080.05,
+      "coverage": 0.27567977885613615,
       "mechanism": "BRIDGED",
       "mechanism_label": "bridged",
       "mechanism_note": "LayerZero OFT. Redemption requires leaving this chain."
@@ -36,14 +36,14 @@
     {
       "symbol": "syrupUSDG",
       "loan": "USDG",
-      "collateral": 48084030.02,
-      "borrow": 42532018.23,
+      "collateral": 48924970.55,
+      "borrow": 43277446.45,
       "lltv": 91.5,
       "measured": true,
-      "pool": 2013158.15,
+      "pool": 2042562.78,
       "redeem": 0,
-      "best": 2013158.15,
-      "coverage": 4.186750048119198,
+      "best": 2042562.78,
+      "coverage": 4.174888113448237,
       "mechanism": "BRIDGE_MINTED",
       "mechanism_label": "bridge-minted",
       "mechanism_note": "Single mint/burn authority holding no backing here."
@@ -51,14 +51,14 @@
     {
       "symbol": "spUSDG",
       "loan": "USDG",
-      "collateral": 16799766.88,
-      "borrow": 13909031.17,
+      "collateral": 17291860.74,
+      "borrow": 14413608.68,
       "lltv": 91.5,
       "measured": true,
-      "pool": 1010.58,
-      "redeem": 15048550.16,
-      "best": 15048550.16,
-      "coverage": 89.57594630622637,
+      "pool": 0,
+      "redeem": 15049660.23,
+      "best": 15049660.23,
+      "coverage": 87.03320282464871,
       "mechanism": "REDEEMABLE",
       "mechanism_label": "redeemable",
       "mechanism_note": "Backing held on this chain; redeemable at size."
@@ -67,7 +67,7 @@
       "symbol": "wsNET",
       "loan": "USDG",
       "collateral": 0.0,
-      "borrow": 10058.07,
+      "borrow": 10716.12,
       "lltv": 62.5,
       "measured": false,
       "mechanism_label": "",
@@ -78,207 +78,140 @@
     "USDe": [
       {
         "size_in": 10000,
-        "usdg_out": 9999.92,
+        "usdg_out": 9999.05,
         "slippage_pct": 0.0,
         "status": "OK"
       },
       {
         "size_in": 50000,
-        "usdg_out": 49996.46,
-        "slippage_pct": -0.006,
+        "usdg_out": 49985.79,
+        "slippage_pct": -0.019,
         "status": "OK"
       },
       {
         "size_in": 100000,
-        "usdg_out": 99978.4,
-        "slippage_pct": -0.021,
+        "usdg_out": 99946.9,
+        "slippage_pct": -0.044,
         "status": "OK"
       },
       {
         "size_in": 250000,
-        "usdg_out": 249775.81,
-        "slippage_pct": -0.089,
+        "usdg_out": 249681.19,
+        "slippage_pct": -0.118,
         "status": "OK"
       },
       {
         "size_in": 500000,
-        "usdg_out": 498939.86,
-        "slippage_pct": -0.211,
+        "usdg_out": 498739.73,
+        "slippage_pct": -0.243,
         "status": "OK"
       },
       {
         "size_in": 1000000,
-        "usdg_out": 550390.45,
-        "slippage_pct": -44.961,
+        "usdg_out": 508080.02,
+        "slippage_pct": -49.187,
         "status": "OK"
       },
       {
         "size_in": 2500000,
-        "usdg_out": 550390.46,
-        "slippage_pct": -77.984,
+        "usdg_out": 508080.04,
+        "slippage_pct": -79.675,
         "status": "OK"
       },
       {
         "size_in": 5000000,
-        "usdg_out": 550390.47,
-        "slippage_pct": -88.992,
+        "usdg_out": 508080.04,
+        "slippage_pct": -89.837,
         "status": "OK"
       },
       {
         "size_in": 10000000,
-        "usdg_out": 550390.47,
-        "slippage_pct": -94.496,
+        "usdg_out": 508080.04,
+        "slippage_pct": -94.919,
         "status": "OK"
       },
       {
         "size_in": 50000000,
-        "usdg_out": 550390.47,
-        "slippage_pct": -98.899,
+        "usdg_out": 508080.05,
+        "slippage_pct": -98.984,
         "status": "OK"
       },
       {
         "size_in": 200000000,
-        "usdg_out": 550390.47,
-        "slippage_pct": -99.725,
+        "usdg_out": 508080.05,
+        "slippage_pct": -99.746,
         "status": "OK"
       }
     ],
     "syrupUSDG": [
       {
         "size_in": 10000,
-        "usdg_out": 10028.6,
+        "usdg_out": 10030.56,
         "slippage_pct": 0.0,
         "status": "OK"
       },
       {
         "size_in": 50000,
-        "usdg_out": 50136.35,
+        "usdg_out": 50146.12,
         "slippage_pct": -0.013,
         "status": "OK"
       },
       {
         "size_in": 100000,
-        "usdg_out": 100256.03,
+        "usdg_out": 100275.57,
         "slippage_pct": -0.03,
         "status": "OK"
       },
       {
         "size_in": 250000,
-        "usdg_out": 250515.22,
+        "usdg_out": 250564.03,
         "slippage_pct": -0.08,
         "status": "OK"
       },
       {
         "size_in": 500000,
-        "usdg_out": 500614.83,
+        "usdg_out": 500712.33,
         "slippage_pct": -0.163,
         "status": "OK"
       },
       {
         "size_in": 1000000,
-        "usdg_out": 999571.38,
+        "usdg_out": 999765.88,
         "slippage_pct": -0.328,
         "status": "OK"
       },
       {
         "size_in": 2500000,
-        "usdg_out": 2013158.15,
-        "slippage_pct": -19.703,
+        "usdg_out": 2042562.78,
+        "slippage_pct": -18.546,
         "status": "OK"
       },
       {
         "size_in": 5000000,
-        "usdg_out": 2013158.15,
-        "slippage_pct": -59.852,
+        "usdg_out": 2042562.78,
+        "slippage_pct": -59.273,
         "status": "OK"
       },
       {
         "size_in": 10000000,
-        "usdg_out": 2013158.15,
-        "slippage_pct": -79.926,
+        "usdg_out": 2042562.78,
+        "slippage_pct": -79.637,
         "status": "OK"
       },
       {
         "size_in": 50000000,
-        "usdg_out": 2013158.15,
-        "slippage_pct": -95.985,
+        "usdg_out": 2042562.78,
+        "slippage_pct": -95.927,
         "status": "OK"
       },
       {
         "size_in": 200000000,
-        "usdg_out": 2013158.15,
-        "slippage_pct": -98.996,
+        "usdg_out": 2042562.78,
+        "slippage_pct": -98.982,
         "status": "OK"
       }
     ],
-    "spUSDG": [
-      {
-        "size_in": 10000,
-        "usdg_out": 919.79,
-        "slippage_pct": 0.0,
-        "status": "OK"
-      },
-      {
-        "size_in": 50000,
-        "usdg_out": 991.02,
-        "slippage_pct": -78.451,
-        "status": "OK"
-      },
-      {
-        "size_in": 100000,
-        "usdg_out": 1000.7,
-        "slippage_pct": -89.12,
-        "status": "OK"
-      },
-      {
-        "size_in": 250000,
-        "usdg_out": 1006.61,
-        "slippage_pct": -95.622,
-        "status": "OK"
-      },
-      {
-        "size_in": 500000,
-        "usdg_out": 1008.59,
-        "slippage_pct": -97.807,
-        "status": "OK"
-      },
-      {
-        "size_in": 1000000,
-        "usdg_out": 1009.59,
-        "slippage_pct": -98.902,
-        "status": "OK"
-      },
-      {
-        "size_in": 2500000,
-        "usdg_out": 1010.18,
-        "slippage_pct": -99.561,
-        "status": "OK"
-      },
-      {
-        "size_in": 5000000,
-        "usdg_out": 1010.38,
-        "slippage_pct": -99.78,
-        "status": "OK"
-      },
-      {
-        "size_in": 10000000,
-        "usdg_out": 1010.48,
-        "slippage_pct": -99.89,
-        "status": "OK"
-      },
-      {
-        "size_in": 50000000,
-        "usdg_out": 1010.56,
-        "slippage_pct": -99.978,
-        "status": "OK"
-      },
-      {
-        "size_in": 200000000,
-        "usdg_out": 1010.58,
-        "slippage_pct": -99.995,
-        "status": "OK"
-      }
-    ]
+    "spUSDG": []
   },
   "redemption_detail": {
     "USDe": {
@@ -310,8 +243,8 @@
       "erc4626": true,
       "backing_asset": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
       "backing_is_usdg": true,
-      "total_assets_usdg": 16933051.83,
-      "idle_usdg_in_vault": 16929385.93,
+      "total_assets_usdg": 17430764.74,
+      "idle_usdg_in_vault": 17427253.61,
       "redemption_ladder": [
         {
           "redeem_units": 1,
@@ -320,36 +253,36 @@
         },
         {
           "redeem_units": 1000,
-          "usdg_out": 1003.24,
+          "usdg_out": 1003.31,
           "status": "OK"
         },
         {
           "redeem_units": 100000,
-          "usdg_out": 100323.67,
+          "usdg_out": 100330.96,
           "status": "OK"
         },
         {
           "redeem_units": 1000000,
-          "usdg_out": 1003236.67,
+          "usdg_out": 1003309.65,
           "status": "OK"
         },
         {
           "redeem_units": 5000000,
-          "usdg_out": 5016183.38,
+          "usdg_out": 5016548.24,
           "status": "OK"
         },
         {
           "redeem_units": 10000000,
-          "usdg_out": 10032366.77,
+          "usdg_out": 10033096.51,
           "status": "OK"
         },
         {
           "redeem_units": 15000000,
-          "usdg_out": 15048550.16,
+          "usdg_out": 15049660.23,
           "status": "OK"
         }
       ],
-      "max_verified_redemption_usdg": 15048550.16,
+      "max_verified_redemption_usdg": 15049660.23,
       "max_is_a_floor_not_a_ceiling": false,
       "layerzero_oft": false,
       "access_control_mint_burn": false,

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   return NextResponse.json({
     ok: true,
-    service: "lastout",
+    service: "hatch",
     chainId: coverage.chain_id,
     dataAsOf: { poolBlock: coverage.pool_block, redemptionBlock: coverage.redemption_block },
     marketsMeasured: coverage.markets.filter((m) => m.measured).length,

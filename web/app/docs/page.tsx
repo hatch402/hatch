@@ -5,7 +5,7 @@ import styles from "../page.module.css";
 import docs from "./docs.module.css";
 
 export const metadata = {
-  title: "Method — LASTOUT",
+  title: "Method — HATCH",
   description:
     "How liquidation coverage on Robinhood Chain is measured, which addresses are read, and what the numbers do not mean.",
 };
@@ -135,7 +135,7 @@ python3 probe/exit_depth.py   # pool depth, laddered
 python3 probe/redemption.py   # local redemption paths`}</pre>
           <p className={docs.body}>
             All three are read-only and need no API key, account, or funds. A dated snapshot lands
-            in <code>data/</code> every day. Or run <code>last/proof USDe</code> in the console on
+            in <code>data/</code> every day. Or run <code>hatch/proof USDe</code> in the console on
             the front page and paste what it hands you into a terminal.
           </p>
         </section>
@@ -170,7 +170,7 @@ python3 probe/redemption.py   # local redemption paths`}</pre>
           <Link className={styles.link} href="/">
             ← Back to the reading
           </Link>
-          <a className={styles.link} href="https://github.com/lastoutlabs/lastout-x402">
+          <a className={styles.link} href="https://github.com/lastoutlabs/hatch">
             Source and snapshots →
           </a>
         </div>

@@ -147,18 +147,18 @@ export default function Home() {
             <h2 className={`display ${styles.h2}`}>Every figure has a command</h2>
             <p className={styles.lede}>
               Nothing here needs an API key, an account, or funds. Run{" "}
-              <code className={styles.code}>last/proof USDe</code> in the console above and paste
+              <code className={styles.code}>hatch/proof USDe</code> in the console above and paste
               what it gives you into a terminal. If our number is wrong, that is how you find out.
             </p>
             <div className={styles.links}>
-              <a className={styles.link} href="https://github.com/lastoutlabs/lastout-x402">
+              <a className={styles.link} href="https://github.com/lastoutlabs/hatch">
                 Source and daily snapshots →
               </a>
               <Link className={styles.link} href="/docs">
                 Method in full →
               </Link>
-              <a className={styles.link} href="https://x.com/lastoutlabs">
-                @lastoutlabs →
+              <a className={styles.link} href="https://x.com/hatch402">
+                @hatch402 →
               </a>
             </div>
           </div>
@@ -175,9 +175,9 @@ export default function Home() {
           </p>
           <p className={styles.small}>
             <span className={styles.wordmarkSmall}>
-              LAST<b>OUT</b>
+              HATCH<b>402</b>
             </span>{" "}
-            — don&rsquo;t be last out.
+            — check the hatch before you need it.
           </p>
         </div>
       </footer>

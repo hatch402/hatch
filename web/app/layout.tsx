@@ -22,17 +22,17 @@ const mono = Martian_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LASTOUT — liquidation coverage on Robinhood Chain",
+  title: "HATCH — liquidation coverage on Robinhood Chain",
   description:
-    "How much lending collateral on Robinhood Chain can actually exit on-chain. Measured daily against the only venue a liquidator contract can call.",
-  metadataBase: new URL("https://lastout.xyz"),
+    "How much lending collateral on Robinhood Chain can actually exit on-chain. Measured daily against the venues a liquidator contract can call.",
+  metadataBase: new URL("https://hatch402.vercel.app"),
   openGraph: {
-    title: "LASTOUT",
+    title: "HATCH",
     description:
       "How much lending collateral on Robinhood Chain can actually exit on-chain.",
     type: "website",
   },
-  twitter: { card: "summary_large_image", site: "@lastoutlabs" },
+  twitter: { card: "summary_large_image", site: "@hatch402" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

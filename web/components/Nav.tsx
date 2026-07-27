@@ -6,8 +6,8 @@ export default function Nav({ block = true }: { block?: boolean }) {
   return (
     <header className={styles.bar}>
       <div className={`shell ${styles.inner}`}>
-        <Link href="/" className={styles.mark} aria-label="LASTOUT home">
-          LAST<b>OUT</b>
+        <Link href="/" className={styles.mark} aria-label="HATCH home">
+          HATCH<b>402</b>
         </Link>
         <nav className={styles.links}>
           <Link className={styles.link} href="/#markets">
@@ -18,7 +18,7 @@ export default function Nav({ block = true }: { block?: boolean }) {
           </Link>
           <a
             className={styles.link}
-            href="https://github.com/lastoutlabs/lastout-x402"
+            href="https://github.com/lastoutlabs/hatch"
             rel="noopener"
           >
             Source

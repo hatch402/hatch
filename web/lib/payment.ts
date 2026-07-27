@@ -28,10 +28,10 @@ const TRANSFER_TOPIC =
  *  diffable, and the same address the site prints. */
 const DEFAULT_PAY_TO = "0x4826167c7366e9d2d9fc5f7bd1eba3626443f9dc";
 
-export const PAY_TO = (process.env.LASTOUT_PAY_TO || DEFAULT_PAY_TO).toLowerCase();
+export const PAY_TO = (process.env.HATCH_PAY_TO || DEFAULT_PAY_TO).toLowerCase();
 
-export const PRICE_USDG = Number(process.env.LASTOUT_PRICE_USDG ?? "1");
-export const PASS_DAYS = Number(process.env.LASTOUT_PASS_DAYS ?? "30");
+export const PRICE_USDG = Number(process.env.HATCH_PRICE_USDG ?? "1");
+export const PASS_DAYS = Number(process.env.HATCH_PASS_DAYS ?? "30");
 
 export type PaymentResult =
   | { ok: true; payer: string; paidUsdg: number; expiresAt: string }
@@ -61,7 +61,7 @@ async function rpc<T>(method: string, params: unknown[]): Promise<T | null> {
 
 /** The string a payer signs to claim their transaction as a pass. */
 export function passMessage(txHash: string): string {
-  return `lastout-pass:${txHash.toLowerCase()}`;
+  return `hatch-pass:${txHash.toLowerCase()}`;
 }
 
 /**
@@ -173,7 +173,7 @@ export function challenge(resource: string) {
     ],
     howToPay: [
       `Send ${PRICE_USDG} USDG to ${PAY_TO} on Robinhood Chain (4663).`,
-      'Sign the string  lastout-pass:<your tx hash>  with the wallet that paid (personal_sign, or: cast wallet sign "lastout-pass:0x...").',
+      'Sign the string  hatch-pass:<your tx hash>  with the wallet that paid (personal_sign, or: cast wallet sign "hatch-pass:0x...").',
       "Retry this request with header  X-PAYMENT: <tx hash>.<signature>",
       `The pass lasts ${PASS_DAYS} days from the block your payment landed in.`,
       "No account, no API key. The transaction is the receipt; the signature proves the receipt is yours — every transfer to this address is public, so a bare hash would be a ticket anyone could photocopy.",

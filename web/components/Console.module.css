@@ -1,4 +1,4 @@
-/* A light console. Terminals are dark by convention, but LASTOUT is an
+/* A light console. Terminals are dark by convention, but HATCH is an
    instrument that prints a reading, not a shell you hack in — so this reads
    as a printout: paper, a fixed platen, ink. */
 
@@ -142,7 +142,7 @@
   font-weight: 700;
 }
 
-/* Long command lines in last/proof must not force the page to scroll sideways. */
+/* Long command lines in hatch/proof must not force the page to scroll sideways. */
 @media (max-width: 720px) {
   .body { font-size: 10.5px; min-height: 360px; }
   .out { padding-left: 12px; }

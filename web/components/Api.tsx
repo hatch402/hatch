@@ -25,7 +25,7 @@ const STEPS = [
   {
     text: (
       <>
-        Sign <code>lastout-pass:&lt;tx hash&gt;</code> with the wallet that paid, and retry with{" "}
+        Sign <code>hatch-pass:&lt;tx hash&gt;</code> with the wallet that paid, and retry with{" "}
         <code>X-PAYMENT: &lt;tx hash&gt;.&lt;signature&gt;</code>.
       </>
     ),
@@ -45,12 +45,12 @@ const STEPS = [
  *  out because a payment flow you can only read about is a claim, not a demo. */
 const BY_HAND = [
   <>
-    <code>last/live USDe 1000000</code> — the console calls this endpoint for real and prints the
+    <code>hatch/live USDe 1000000</code> — the console calls this endpoint for real and prints the
     402 it gets back, with the address to pay.
   </>,
   <>Send the USDG from your own wallet. Nothing on this page can move your funds.</>,
   <>
-    <code>last/pay 0x…</code> — your wallet signs the hash (one click, moves nothing), and the
+    <code>hatch/pay 0x…</code> — your wallet signs the hash (one click, moves nothing), and the
     question you already asked runs by itself.
   </>,
 ];
@@ -70,7 +70,7 @@ export default function Api() {
               Enough to check whether we are right.
             </p>
             <pre className={styles.code}>{`GET  /v1/health
-git  clone lastout-x402
+git  clone hatch
 run  probe/exit_depth.py`}</pre>
           </div>
         </div>

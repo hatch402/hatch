@@ -8,18 +8,18 @@ type Tone = "dim" | "ink" | "amber" | "ember" | "rule";
 type Line = { text: string; tone?: Tone; copy?: string };
 
 const PROMPT = "$";
-const BOOT_COMMAND = "last/out";
-const PASS_KEY = "lastout.pass";
+const BOOT_COMMAND = "hatch/out";
+const PASS_KEY = "hatch.pass";
 
 const HELP: Line[] = [
-  { text: "last/out                     chain-wide coverage             free", tone: "ink" },
-  { text: "last/market <SYMBOL>         one market in detail            free", tone: "ink" },
-  { text: "last/exit <SYMBOL> <USD>     can this size get out?          free · daily snapshot", tone: "ink" },
-  { text: "last/proof <SYMBOL>          the command to check it yourself  free", tone: "ink" },
+  { text: "hatch/out                    chain-wide coverage             free", tone: "ink" },
+  { text: "hatch/market <SYMBOL>        one market in detail            free", tone: "ink" },
+  { text: "hatch/exit <SYMBOL> <USD>    can this size get out?          free · daily snapshot", tone: "ink" },
+  { text: "hatch/proof <SYMBOL>         the command to check it yourself  free", tone: "ink" },
   { text: "" },
-  { text: "last/live <SYMBOL> <USD>     the same question, this block   1 USDG · 30 days", tone: "amber" },
-  { text: "last/pay <TX HASH>           claim your payment (wallet signs it)", tone: "amber" },
-  { text: "last/pass                    what your pass is worth", tone: "amber" },
+  { text: "hatch/live <SYMBOL> <USD>    the same question, this block   1 USDG · 30 days", tone: "amber" },
+  { text: "hatch/pay <TX HASH>          claim your payment (wallet signs it)", tone: "amber" },
+  { text: "hatch/pass                   what your pass is worth", tone: "amber" },
   { text: "" },
   { text: "clear                        wipe the console", tone: "ink" },
 ];
@@ -31,7 +31,7 @@ const ADDRESSES: Record<string, string> = {
 };
 
 /** Mutable state the commands share: the pass, and the question a caller asked
- *  before they had one. Kept in a ref so `last/pay` can finish what `last/live`
+ *  before they had one. Kept in a ref so `hatch/pay` can finish what `hatch/live`
  *  started instead of making the caller retype it. */
 type Session = {
   pass: string | null;
@@ -86,7 +86,7 @@ function chainWide(): Line[] {
     { text: `ratio           ${(c.bridged_ratio.toFixed(1) + " : 1").padStart(14)}`, tone: "ember" },
     { text: "" },
     { text: `pool depth at block ${c.pool_block} · redemption at block ${c.redemption_block}`, tone: "dim" },
-    { text: "type  last/exit USDe 1000000  to ask about a size", tone: "dim" },
+    { text: "type  hatch/exit USDe 1000000  to ask about a size", tone: "dim" },
   ];
 }
 
@@ -122,7 +122,7 @@ function marketDetail(symbol: string): Line[] {
 function exitAnswer(symbol: string, sizeRaw: string): Line[] {
   const size = parseSize(sizeRaw);
   if (size === null) {
-    return [{ text: `"${sizeRaw}" is not a size. try: last/exit USDe 1000000`, tone: "ember" }];
+    return [{ text: `"${sizeRaw}" is not a size. try: hatch/exit USDe 1000000`, tone: "ember" }];
   }
   const result = canExit(symbol, size);
   if (!result.found) return unknownSymbol(symbol);
@@ -150,7 +150,7 @@ function exitAnswer(symbol: string, sizeRaw: string): Line[] {
     tone: "dim",
   });
   lines.push({
-    text: `for this block instead:  last/live ${market.symbol} ${size}`,
+    text: `for this block instead:  hatch/live ${market.symbol} ${size}`,
     tone: "dim",
   });
   return lines;
@@ -230,7 +230,7 @@ function challengeLines(body: Challenge, symbol: string, size: number): Line[] {
     { text: `pay to          ${terms.payTo}`, tone: "amber", copy: terms.payTo },
     { text: "" },
     { text: "send it from your own wallet, on Robinhood Chain, then:", tone: "dim" },
-    { text: "  last/pay <transaction hash>", tone: "ink" },
+    { text: "  hatch/pay <transaction hash>", tone: "ink" },
     { text: "" },
     { text: "how we confirm: your wallet signs the hash (one click, moves nothing),", tone: "dim" },
     { text: "and we pull the transaction off the chain ourselves — it must carry", tone: "dim" },
@@ -330,7 +330,7 @@ async function askLive(session: Session, symbol: string, size: number): Promise<
   }
 
   if (response.status === 402) {
-    // Keep the question so `last/pay` can finish it, and drop a pass the
+    // Keep the question so `hatch/pay` can finish it, and drop a pass the
     // server just refused rather than replaying it on every command.
     session.pending = { symbol, size };
     if (body.rejected && session.pass) forgetPass(session);
@@ -398,12 +398,12 @@ function signManually(hash: string): Line[] {
     { text: "sign from any terminal instead — the key never leaves your machine:", tone: "dim" },
     { text: "" },
     {
-      text: `cast wallet sign "lastout-pass:${hash.toLowerCase()}" --interactive`,
+      text: `cast wallet sign "hatch-pass:${hash.toLowerCase()}" --interactive`,
       tone: "ink",
-      copy: `cast wallet sign "lastout-pass:${hash.toLowerCase()}" --interactive`,
+      copy: `cast wallet sign "hatch-pass:${hash.toLowerCase()}" --interactive`,
     },
     { text: "" },
-    { text: "then:  last/pay <hash> <signature>", tone: "ink" },
+    { text: "then:  hatch/pay <hash> <signature>", tone: "ink" },
   ];
 }
 
@@ -430,13 +430,13 @@ async function pay(session: Session, hash: string, givenSig?: string): Promise<L
       })) as string[];
       signature = (await window.ethereum.request({
         method: "personal_sign",
-        params: [`lastout-pass:${hash.toLowerCase()}`, accounts[0]],
+        params: [`hatch-pass:${hash.toLowerCase()}`, accounts[0]],
       })) as string;
     } catch {
       return [
         { text: "the wallet declined to sign.", tone: "ember" },
         { text: "signing costs nothing and moves nothing — it only proves the", tone: "dim" },
-        { text: "payment is yours. run last/pay again to retry, or:", tone: "dim" },
+        { text: "payment is yours. run hatch/pay again to retry, or:", tone: "dim" },
         ...signManually(hash).slice(2),
       ];
     }
@@ -455,7 +455,7 @@ function passStatus(session: Session): Line[] {
   if (!session.pass) {
     return [
       { text: "no pass in this browser.", tone: "dim" },
-      { text: "run  last/live USDe 1000000  to see what one costs.", tone: "dim" },
+      { text: "run  hatch/live USDe 1000000  to see what one costs.", tone: "dim" },
     ];
   }
   const [hash] = session.pass.split(".");
@@ -467,7 +467,7 @@ function passStatus(session: Session): Line[] {
     },
     { text: "" },
     { text: "the pass is your payment's hash plus your signature over it, held only", tone: "dim" },
-    { text: "in this browser. we store nothing about you. last/forget drops it.", tone: "dim" },
+    { text: "in this browser. we store nothing about you. hatch/forget drops it.", tone: "dim" },
   ];
 }
 
@@ -478,36 +478,36 @@ function run(input: string, session: Session): Line[] | Promise<Line[]> {
       return [];
     case "help":
       return HELP;
-    case "last/out":
+    case "hatch/out":
       return chainWide();
-    case "last/market":
-      return args[0] ? marketDetail(args[0]) : [{ text: "usage: last/market <SYMBOL>", tone: "dim" }];
-    case "last/exit": {
-      if (!args[0] || !args[1]) return [{ text: "usage: last/exit <SYMBOL> <USD>", tone: "dim" }];
+    case "hatch/market":
+      return args[0] ? marketDetail(args[0]) : [{ text: "usage: hatch/market <SYMBOL>", tone: "dim" }];
+    case "hatch/exit": {
+      if (!args[0] || !args[1]) return [{ text: "usage: hatch/exit <SYMBOL> <USD>", tone: "dim" }];
       const { symbol, sizeRaw } = symbolAndSize(args[0], args[1]);
       return exitAnswer(symbol, sizeRaw);
     }
-    case "last/proof":
-      return args[0] ? proof(args[0]) : [{ text: "usage: last/proof <SYMBOL>", tone: "dim" }];
-    case "last/live": {
-      if (!args[0] || !args[1]) return [{ text: "usage: last/live <SYMBOL> <USD>", tone: "dim" }];
+    case "hatch/proof":
+      return args[0] ? proof(args[0]) : [{ text: "usage: hatch/proof <SYMBOL>", tone: "dim" }];
+    case "hatch/live": {
+      if (!args[0] || !args[1]) return [{ text: "usage: hatch/live <SYMBOL> <USD>", tone: "dim" }];
       const { symbol, sizeRaw } = symbolAndSize(args[0], args[1]);
       const size = parseSize(sizeRaw);
       if (size === null) {
-        return [{ text: `"${sizeRaw}" is not a size. try: last/live USDe 1000000`, tone: "ember" }];
+        return [{ text: `"${sizeRaw}" is not a size. try: hatch/live USDe 1000000`, tone: "ember" }];
       }
       const market = findMarket(symbol);
       if (!market) return unknownSymbol(symbol);
       // Canonical casing from here on, so "usde" asks and answers as USDe.
       return askLive(session, market.symbol, size);
     }
-    case "last/pay":
+    case "hatch/pay":
       return args[0]
         ? pay(session, args[0], args[1])
-        : [{ text: "usage: last/pay <TX HASH>  (or: last/pay <TX HASH> <SIGNATURE>)", tone: "dim" }];
-    case "last/pass":
+        : [{ text: "usage: hatch/pay <TX HASH>  (or: hatch/pay <TX HASH> <SIGNATURE>)", tone: "dim" }];
+    case "hatch/pass":
       return passStatus(session);
-    case "last/forget":
+    case "hatch/forget":
       forgetPass(session);
       return [{ text: "pass dropped from this browser.", tone: "dim" }];
     default:
@@ -652,7 +652,7 @@ export default function Console() {
   return (
     <div className={styles.console} onClick={() => inputRef.current?.focus()}>
       <div className={styles.chrome}>
-        <span className={styles.label}>LASTOUT CONSOLE</span>
+        <span className={styles.label}>HATCH CONSOLE</span>
         <span className={styles.meta}>CHAIN 4663 · READ ONLY</span>
       </div>
 
@@ -725,7 +725,7 @@ export default function Console() {
               spellCheck={false}
               autoComplete="off"
               aria-label="Console command"
-              placeholder="last/live USDe 1000000"
+              placeholder="hatch/live USDe 1000000"
             />
             <button type="submit" className="sr-only">
               Run command
