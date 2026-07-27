@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { coverage, findMarket } from "../../../lib/coverage";
 import { quoteLive } from "../../../lib/live";
-import { verifyPayment, challenge, PRICE_USDG, PASS_DAYS } from "../../../lib/payment";
+import { verifyPayment, challenge, ChainUnreachable } from "../../../lib/payment";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +47,22 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const payment = await verifyPayment(paymentHeader.trim());
+  // A payment we cannot check is not a payment we can reject. 402 means "the
+  // chain says this is not a pass"; when the chain says nothing, say 503 and
+  // leave the caller's pass alone.
+  let payment;
+  try {
+    payment = await verifyPayment(paymentHeader.trim());
+  } catch (error) {
+    if (!(error instanceof ChainUnreachable)) throw error;
+    return NextResponse.json(
+      {
+        error: "could not reach the chain to verify the payment",
+        hint: "your transaction is fine; retry with the same X-PAYMENT header",
+      },
+      { status: 503, headers: { "cache-control": "no-store" } },
+    );
+  }
   if (!payment.ok) {
     return NextResponse.json(
       { ...challenge(RESOURCE), rejected: payment.reason },

@@ -5,16 +5,22 @@ import { coverage, canExit, findMarket, usd, measured } from "../lib/coverage";
 import styles from "./Console.module.css";
 
 type Tone = "dim" | "ink" | "amber" | "ember" | "rule";
-type Line = { text: string; tone?: Tone };
+type Line = { text: string; tone?: Tone; copy?: string };
 
 const PROMPT = "$";
 const BOOT_COMMAND = "last/out";
+const PASS_KEY = "lastout.pass";
 
 const HELP: Line[] = [
-  { text: "last/out                     chain-wide coverage", tone: "ink" },
-  { text: "last/market <SYMBOL>         one market in detail", tone: "ink" },
-  { text: "last/exit <SYMBOL> <USD>     can this size get out?", tone: "ink" },
-  { text: "last/proof <SYMBOL>          the command to verify it yourself", tone: "ink" },
+  { text: "last/out                     chain-wide coverage             free", tone: "ink" },
+  { text: "last/market <SYMBOL>         one market in detail            free", tone: "ink" },
+  { text: "last/exit <SYMBOL> <USD>     can this size get out?          free · daily snapshot", tone: "ink" },
+  { text: "last/proof <SYMBOL>          the command to check it yourself  free", tone: "ink" },
+  { text: "" },
+  { text: "last/live <SYMBOL> <USD>     the same question, this block   1 USDG · 30 days", tone: "amber" },
+  { text: "last/pay <TX HASH>           claim your payment (wallet signs it)", tone: "amber" },
+  { text: "last/pass                    what your pass is worth", tone: "amber" },
+  { text: "" },
   { text: "clear                        wipe the console", tone: "ink" },
 ];
 
@@ -24,9 +30,44 @@ const ADDRESSES: Record<string, string> = {
   spUSDG: "0xde770c84FE66E063336b31737cFE9790f18c4087",
 };
 
+/** Mutable state the commands share: the pass, and the question a caller asked
+ *  before they had one. Kept in a ref so `last/pay` can finish what `last/live`
+ *  started instead of making the caller retype it. */
+type Session = {
+  pass: string | null;
+  expiresAt: string | null;
+  pending: { symbol: string; size: number } | null;
+};
+
 function bar(pct: number, width = 34): string {
   const filled = Math.max(pct > 0 ? 1 : 0, Math.round((pct / 100) * width));
   return "█".repeat(Math.min(filled, width)) + "·".repeat(Math.max(0, width - filled));
+}
+
+function parseSize(raw: string): number | null {
+  const size = Number(raw.replace(/[$,_]/g, ""));
+  return Number.isFinite(size) && size > 0 ? size : null;
+}
+
+/** People type "5000 USDe" as often as "USDe 5000". The two are never
+ *  ambiguous — one parses as a number, the other does not — so scolding over
+ *  argument order would be pedantry, not rigor. */
+function symbolAndSize(a: string, b: string): { symbol: string; sizeRaw: string } {
+  return parseSize(a) !== null && parseSize(b) === null
+    ? { symbol: b, sizeRaw: a }
+    : { symbol: a, sizeRaw: b };
+}
+
+function signed(value: number): string {
+  const sign = value < 0 ? "-" : "+";
+  return `${sign}${usd(Math.abs(value))}`;
+}
+
+function unknownSymbol(symbol: string): Line[] {
+  return [
+    { text: `no market for "${symbol}"`, tone: "ember" },
+    { text: `known: ${coverage.markets.map((x) => x.symbol).join(", ")}`, tone: "dim" },
+  ];
 }
 
 function chainWide(): Line[] {
@@ -51,18 +92,13 @@ function chainWide(): Line[] {
 
 function marketDetail(symbol: string): Line[] {
   const m = findMarket(symbol);
-  if (!m) {
-    return [
-      { text: `no market for "${symbol}"`, tone: "ember" },
-      { text: `known: ${coverage.markets.map((x) => x.symbol).join(", ")}`, tone: "dim" },
-    ];
-  }
+  if (!m) return unknownSymbol(symbol);
   if (!m.measured) {
     return [
       { text: `${m.symbol} / ${m.loan}`, tone: "ink" },
       { text: `collateral      ${usd(m.collateral).padStart(14)}`, tone: "ink" },
       { text: `borrowed        ${usd(m.borrow).padStart(14)}`, tone: "ink" },
-      { text: "", },
+      { text: "" },
       { text: "not measured — no probe for this collateral yet.", tone: "dim" },
       { text: "it is never counted as covered.", tone: "dim" },
     ];
@@ -84,17 +120,12 @@ function marketDetail(symbol: string): Line[] {
 }
 
 function exitAnswer(symbol: string, sizeRaw: string): Line[] {
-  const size = Number(sizeRaw.replace(/[$,_]/g, ""));
-  if (!Number.isFinite(size) || size <= 0) {
+  const size = parseSize(sizeRaw);
+  if (size === null) {
     return [{ text: `"${sizeRaw}" is not a size. try: last/exit USDe 1000000`, tone: "ember" }];
   }
   const result = canExit(symbol, size);
-  if (!result.found) {
-    return [
-      { text: `no market for "${symbol}"`, tone: "ember" },
-      { text: `known: ${coverage.markets.map((x) => x.symbol).join(", ")}`, tone: "dim" },
-    ];
-  }
+  if (!result.found) return unknownSymbol(symbol);
   if (!result.measured) {
     return [{ text: `${result.market.symbol} is not measured yet.`, tone: "dim" }];
   }
@@ -114,7 +145,14 @@ function exitAnswer(symbol: string, sizeRaw: string): Line[] {
     lines.push({ text: `slippage        ${(slippage.toFixed(2) + "%").padStart(14)}`, tone: "dim" });
   }
   lines.push({ text: "" });
-  lines.push({ text: `via ${market.mechanism_label}. run last/proof ${market.symbol} to check it yourself.`, tone: "dim" });
+  lines.push({
+    text: `answered from the snapshot at block ${coverage.pool_block}, taken once a day.`,
+    tone: "dim",
+  });
+  lines.push({
+    text: `for this block instead:  last/live ${market.symbol} ${size}`,
+    tone: "dim",
+  });
   return lines;
 }
 
@@ -145,7 +183,295 @@ function proof(symbol: string): Line[] {
   ];
 }
 
-function run(input: string): Line[] {
+/* ---------------------------------------------------------------------- */
+/* The paid path. Everything below talks to the real endpoint — the same    */
+/* /v1/exit an agent would call, with the same 402, from the same browser.  */
+/* Nothing is mocked, which is the point: a demo of a payment flow that     */
+/* does not take payment teaches the visitor nothing.                       */
+/* ---------------------------------------------------------------------- */
+
+type Challenge = {
+  accepts?: {
+    payTo?: string | null;
+    maxAmountRequired?: string;
+    asset?: string;
+    assetSymbol?: string;
+    network?: string;
+    description?: string;
+  }[];
+  rejected?: string;
+  howToPay?: string[];
+};
+
+function challengeLines(body: Challenge, symbol: string, size: number): Line[] {
+  const terms = body.accepts?.[0];
+  const price = terms?.maxAmountRequired ? Number(terms.maxAmountRequired) / 1e6 : null;
+  const lines: Line[] = [];
+
+  if (body.rejected) {
+    lines.push({ text: `payment rejected — ${body.rejected}`, tone: "ember" }, { text: "" });
+  }
+
+  lines.push({ text: "402 PAYMENT REQUIRED", tone: "amber" }, { text: "" });
+
+  if (!terms?.payTo) {
+    lines.push(
+      { text: "this endpoint is not accepting payment yet.", tone: "ember" },
+      { text: "the receiving address is unset, so it refuses rather than", tone: "dim" },
+      { text: "inventing one. nothing you send would arrive.", tone: "dim" },
+    );
+    return lines;
+  }
+
+  lines.push(
+    { text: `price           ${(price !== null ? `${price} ${terms.assetSymbol ?? "USDG"}` : "—").padStart(14)}`, tone: "ink" },
+    { text: `network         ${(terms.network ?? "eip155:4663").padStart(14)}`, tone: "ink" },
+    { text: `asset           ${terms.asset ?? ""}`, tone: "ink", copy: terms.asset },
+    { text: `pay to          ${terms.payTo}`, tone: "amber", copy: terms.payTo },
+    { text: "" },
+    { text: "send it from your own wallet, on Robinhood Chain, then:", tone: "dim" },
+    { text: "  last/pay <transaction hash>", tone: "ink" },
+    { text: "" },
+    { text: "how we confirm: your wallet signs the hash (one click, moves nothing),", tone: "dim" },
+    { text: "and we pull the transaction off the chain ourselves — it must carry", tone: "dim" },
+    { text: "≥ 1 USDG to the address above, from the wallet that signed. the chain is", tone: "dim" },
+    { text: "the receipt; the signature proves the receipt is yours. no login, no account.", tone: "dim" },
+    { text: "" },
+    { text: `you asked: ${symbol} ${usd(size)} — it will run by itself once paid.`, tone: "dim" },
+  );
+  return lines;
+}
+
+type LiveAnswer = {
+  symbol: string;
+  askedUsd: number;
+  quotedAtBlock: string;
+  clears: boolean;
+  maxExitUsd: number;
+  wouldReceiveUsd: number | null;
+  shortfallUsd: number;
+  costPct: number | null;
+  mechanismNote?: string;
+  snapshotForComparison?: { maxExitUsd?: number; poolBlock?: string };
+  pass?: { expiresAt?: string };
+};
+
+function answerLines(body: LiveAnswer): Line[] {
+  const head = body.clears
+    ? { text: `YES — ${usd(body.askedUsd)} of ${body.symbol} can exit right now.`, tone: "ink" as Tone }
+    : { text: `NO — ${usd(body.askedUsd)} of ${body.symbol} cannot exit right now.`, tone: "ember" as Tone };
+
+  const lines: Line[] = [
+    { text: `LIVE · block ${body.quotedAtBlock}`, tone: "amber" },
+    { text: "" },
+    head,
+    { text: "" },
+    { text: `max exit        ${usd(body.maxExitUsd).padStart(14)}`, tone: "ink" },
+    { text: `you asked for   ${usd(body.askedUsd).padStart(14)}`, tone: "ink" },
+  ];
+
+  if (!body.clears) {
+    lines.push({ text: `short by        ${usd(body.shortfallUsd).padStart(14)}`, tone: "ember" });
+  }
+  if (body.wouldReceiveUsd !== null) {
+    lines.push({ text: `you'd receive   ${usd(body.wouldReceiveUsd).padStart(14)}`, tone: "ink" });
+  }
+  if (body.costPct !== null) {
+    lines.push({ text: `costs you       ${(body.costPct.toFixed(2) + "%").padStart(14)}`, tone: "dim" });
+  }
+
+  // The reason this question is worth a dollar. If the two agree, that shows
+  // too — a day-old number being right is also worth knowing.
+  const snap = body.snapshotForComparison?.maxExitUsd;
+  if (typeof snap === "number" && snap > 0) {
+    const drift = body.maxExitUsd - snap;
+    const pct = (drift / snap) * 100;
+    lines.push(
+      { text: "" },
+      { text: `snapshot said   ${usd(snap).padStart(14)}   block ${body.snapshotForComparison?.poolBlock ?? "?"}`, tone: "dim" },
+      {
+        text: `moved since     ${signed(drift).padStart(14)}   ${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`,
+        tone: Math.abs(pct) >= 1 ? "ember" : "dim",
+      },
+    );
+  }
+
+  lines.push({ text: "" });
+  if (body.pass?.expiresAt) {
+    lines.push({ text: `pass good until ${body.pass.expiresAt.slice(0, 10)}.`, tone: "dim" });
+  }
+  lines.push({
+    text: "quoted, not settled. a quote and an executed swap can disagree where hooks are involved.",
+    tone: "dim",
+  });
+  return lines;
+}
+
+async function askLive(session: Session, symbol: string, size: number): Promise<Line[]> {
+  const headers: Record<string, string> = {};
+  if (session.pass) headers["x-payment"] = session.pass;
+
+  let response: Response;
+  try {
+    response = await fetch(
+      `/v1/exit?symbol=${encodeURIComponent(symbol)}&size=${size}`,
+      { headers, cache: "no-store" },
+    );
+  } catch {
+    return [
+      { text: "could not reach the endpoint.", tone: "ember" },
+      { text: "the free commands still work — they read a file, not the network.", tone: "dim" },
+    ];
+  }
+
+  const body = await response.json().catch(() => null);
+  if (!body) {
+    return [{ text: `endpoint returned ${response.status} with no body`, tone: "ember" }];
+  }
+
+  if (response.status === 402) {
+    // Keep the question so `last/pay` can finish it, and drop a pass the
+    // server just refused rather than replaying it on every command.
+    session.pending = { symbol, size };
+    if (body.rejected && session.pass) forgetPass(session);
+    return challengeLines(body as Challenge, symbol, size);
+  }
+
+  if (response.status === 503) {
+    return [
+      { text: "the chain did not answer.", tone: "ember" },
+      { text: body.detail ?? "", tone: "dim" },
+      { text: "no answer is better than a stale one presented as live.", tone: "dim" },
+      { text: "your pass is untouched. try again in a moment.", tone: "dim" },
+    ];
+  }
+
+  if (!response.ok) {
+    return [
+      { text: body.error ?? `endpoint returned ${response.status}`, tone: "ember" },
+      ...(body.known ? [{ text: `known: ${body.known.join(", ")}`, tone: "dim" as Tone }] : []),
+    ];
+  }
+
+  if (body.measured === false) {
+    return [
+      { text: `${body.symbol} has exposure but no probe yet.`, tone: "dim" },
+      { text: "it is never counted as covered.", tone: "dim" },
+    ];
+  }
+
+  session.pending = null;
+  if (body.pass?.expiresAt) session.expiresAt = body.pass.expiresAt;
+  return answerLines(body as LiveAnswer);
+}
+
+function rememberPass(session: Session, hash: string) {
+  session.pass = hash;
+  try {
+    localStorage.setItem(PASS_KEY, hash);
+  } catch {
+    // Private browsing. The pass still works for this page view.
+  }
+}
+
+function forgetPass(session: Session) {
+  session.pass = null;
+  session.expiresAt = null;
+  try {
+    localStorage.removeItem(PASS_KEY);
+  } catch {
+    /* nothing to clean up */
+  }
+}
+
+/** A wallet extension, if one is installed. Only personal_sign is ever asked
+ *  of it — nothing here can move funds. */
+declare global {
+  interface Window {
+    ethereum?: { request: (args: { method: string; params?: unknown[] }) => Promise<unknown> };
+  }
+}
+
+function signManually(hash: string): Line[] {
+  return [
+    { text: "no wallet extension found in this browser.", tone: "dim" },
+    { text: "sign from any terminal instead — the key never leaves your machine:", tone: "dim" },
+    { text: "" },
+    {
+      text: `cast wallet sign "lastout-pass:${hash.toLowerCase()}" --interactive`,
+      tone: "ink",
+      copy: `cast wallet sign "lastout-pass:${hash.toLowerCase()}" --interactive`,
+    },
+    { text: "" },
+    { text: "then:  last/pay <hash> <signature>", tone: "ink" },
+  ];
+}
+
+async function pay(session: Session, hash: string, givenSig?: string): Promise<Line[]> {
+  if (!/^0x[0-9a-fA-F]{64}$/.test(hash)) {
+    return [
+      { text: "that is not a transaction hash.", tone: "ember" },
+      { text: "expected 0x followed by 64 hex characters.", tone: "dim" },
+    ];
+  }
+
+  // The signature proves the hash is the caller's own payment and not one
+  // photocopied off the explorer — every transfer to the receiving address is
+  // public, so the hash alone could never be the whole credential.
+  let signature = givenSig ?? null;
+  if (signature && !/^0x[0-9a-fA-F]{130}$/.test(signature)) {
+    return [{ text: "that signature does not parse (expected 0x + 130 hex).", tone: "ember" }];
+  }
+  if (!signature) {
+    if (!window.ethereum) return signManually(hash);
+    try {
+      const accounts = (await window.ethereum.request({
+        method: "eth_requestAccounts",
+      })) as string[];
+      signature = (await window.ethereum.request({
+        method: "personal_sign",
+        params: [`lastout-pass:${hash.toLowerCase()}`, accounts[0]],
+      })) as string;
+    } catch {
+      return [
+        { text: "the wallet declined to sign.", tone: "ember" },
+        { text: "signing costs nothing and moves nothing — it only proves the", tone: "dim" },
+        { text: "payment is yours. run last/pay again to retry, or:", tone: "dim" },
+        ...signManually(hash).slice(2),
+      ];
+    }
+  }
+
+  rememberPass(session, `${hash}.${signature}`);
+  const query = session.pending ?? { symbol: "USDe", size: 1_000_000 };
+  return [
+    { text: "signed. pass stored in this browser. verifying it on chain…", tone: "dim" },
+    { text: "" },
+    ...(await askLive(session, query.symbol, query.size)),
+  ];
+}
+
+function passStatus(session: Session): Line[] {
+  if (!session.pass) {
+    return [
+      { text: "no pass in this browser.", tone: "dim" },
+      { text: "run  last/live USDe 1000000  to see what one costs.", tone: "dim" },
+    ];
+  }
+  const [hash] = session.pass.split(".");
+  return [
+    { text: `payment         ${hash}`, tone: "ink", copy: session.pass },
+    {
+      text: `expires         ${(session.expiresAt ? session.expiresAt.slice(0, 10) : "unverified").padStart(14)}`,
+      tone: "dim",
+    },
+    { text: "" },
+    { text: "the pass is your payment's hash plus your signature over it, held only", tone: "dim" },
+    { text: "in this browser. we store nothing about you. last/forget drops it.", tone: "dim" },
+  ];
+}
+
+function run(input: string, session: Session): Line[] | Promise<Line[]> {
   const [command, ...args] = input.trim().split(/\s+/);
   switch (command) {
     case "":
@@ -156,12 +482,34 @@ function run(input: string): Line[] {
       return chainWide();
     case "last/market":
       return args[0] ? marketDetail(args[0]) : [{ text: "usage: last/market <SYMBOL>", tone: "dim" }];
-    case "last/exit":
-      return args[0] && args[1]
-        ? exitAnswer(args[0], args[1])
-        : [{ text: "usage: last/exit <SYMBOL> <USD>", tone: "dim" }];
+    case "last/exit": {
+      if (!args[0] || !args[1]) return [{ text: "usage: last/exit <SYMBOL> <USD>", tone: "dim" }];
+      const { symbol, sizeRaw } = symbolAndSize(args[0], args[1]);
+      return exitAnswer(symbol, sizeRaw);
+    }
     case "last/proof":
       return args[0] ? proof(args[0]) : [{ text: "usage: last/proof <SYMBOL>", tone: "dim" }];
+    case "last/live": {
+      if (!args[0] || !args[1]) return [{ text: "usage: last/live <SYMBOL> <USD>", tone: "dim" }];
+      const { symbol, sizeRaw } = symbolAndSize(args[0], args[1]);
+      const size = parseSize(sizeRaw);
+      if (size === null) {
+        return [{ text: `"${sizeRaw}" is not a size. try: last/live USDe 1000000`, tone: "ember" }];
+      }
+      const market = findMarket(symbol);
+      if (!market) return unknownSymbol(symbol);
+      // Canonical casing from here on, so "usde" asks and answers as USDe.
+      return askLive(session, market.symbol, size);
+    }
+    case "last/pay":
+      return args[0]
+        ? pay(session, args[0], args[1])
+        : [{ text: "usage: last/pay <TX HASH>  (or: last/pay <TX HASH> <SIGNATURE>)", tone: "dim" }];
+    case "last/pass":
+      return passStatus(session);
+    case "last/forget":
+      forgetPass(session);
+      return [{ text: "pass dropped from this browser.", tone: "dim" }];
     default:
       return [
         { text: `unknown command: ${command}`, tone: "ember" },
@@ -170,36 +518,53 @@ function run(input: string): Line[] {
   }
 }
 
+type Entry = { id: number; input: string; output: Line[]; busy?: boolean };
+
 export default function Console() {
-  const [history, setHistory] = useState<{ input: string; output: Line[] }[]>([]);
+  const [history, setHistory] = useState<Entry[]>([]);
   const [typed, setTyped] = useState("");
   const [entry, setEntry] = useState("");
   const [booted, setBooted] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const nextId = useRef(0);
+  const recall = useRef<string[]>([]);
+  const recallAt = useRef(-1);
+  const session = useRef<Session>({ pass: null, expiresAt: null, pending: null });
 
   // Page-load sequence: the console runs the product rather than describing it.
   useEffect(() => {
+    try {
+      session.current.pass = localStorage.getItem(PASS_KEY);
+    } catch {
+      /* storage unavailable; the console works without it */
+    }
+
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const boot = () => {
+      setHistory([{ id: nextId.current++, input: BOOT_COMMAND, output: chainWide() }]);
+      setBooted(true);
+    };
     if (reduced) {
       setTyped(BOOT_COMMAND);
-      setHistory([{ input: BOOT_COMMAND, output: chainWide() }]);
-      setBooted(true);
+      boot();
       return;
     }
     let index = 0;
+    let settle: ReturnType<typeof setTimeout>;
     const typing = setInterval(() => {
       index += 1;
       setTyped(BOOT_COMMAND.slice(0, index));
       if (index >= BOOT_COMMAND.length) {
         clearInterval(typing);
-        setTimeout(() => {
-          setHistory([{ input: BOOT_COMMAND, output: chainWide() }]);
-          setBooted(true);
-        }, 260);
+        settle = setTimeout(boot, 260);
       }
     }, 62);
-    return () => clearInterval(typing);
+    return () => {
+      clearInterval(typing);
+      clearTimeout(settle);
+    };
   }, []);
 
   useEffect(() => {
@@ -209,11 +574,38 @@ export default function Console() {
   const commit = useCallback(() => {
     const input = entry;
     setEntry("");
+    if (input.trim()) {
+      recall.current = [...recall.current, input].slice(-40);
+      recallAt.current = -1;
+    }
     if (input.trim() === "clear") {
       setHistory([]);
       return;
     }
-    setHistory((prev) => [...prev, { input, output: run(input) }]);
+
+    const outcome = run(input, session.current);
+    if (Array.isArray(outcome)) {
+      setHistory((prev) => [...prev, { id: nextId.current++, input, output: outcome }]);
+      return;
+    }
+
+    // A network command holds the line open. Without this the console looks
+    // broken for the second or two the chain takes to answer.
+    const id = nextId.current++;
+    setHistory((prev) => [
+      ...prev,
+      { id, input, output: [{ text: "working…", tone: "dim" }], busy: true },
+    ]);
+    outcome
+      .catch((error: unknown) => [
+        { text: "the command failed.", tone: "ember" as Tone },
+        { text: error instanceof Error ? error.message.slice(0, 160) : "unknown", tone: "dim" as Tone },
+      ])
+      .then((output) => {
+        setHistory((prev) =>
+          prev.map((item) => (item.id === id ? { ...item, output, busy: false } : item)),
+        );
+      });
   }, [entry]);
 
   const submit = useCallback(
@@ -231,10 +623,31 @@ export default function Console() {
       if (event.key === "Enter") {
         event.preventDefault();
         commit();
+        return;
       }
+      if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+      const log = recall.current;
+      if (log.length === 0) return;
+      event.preventDefault();
+      const at =
+        event.key === "ArrowUp"
+          ? Math.min(recallAt.current + 1, log.length - 1)
+          : recallAt.current - 1;
+      recallAt.current = at;
+      setEntry(at < 0 ? "" : log[log.length - 1 - at]);
     },
     [commit],
   );
+
+  const copy = useCallback((value: string) => {
+    navigator.clipboard?.writeText(value).then(
+      () => {
+        setCopied(value);
+        setTimeout(() => setCopied((current) => (current === value ? null : current)), 1400);
+      },
+      () => setCopied(null),
+    );
+  }, []);
 
   return (
     <div className={styles.console} onClick={() => inputRef.current?.focus()}>
@@ -254,21 +667,49 @@ export default function Console() {
           </div>
         )}
 
-        {history.map((item, i) => (
-          <div key={i}>
+        {history.map((item) => (
+          <div key={item.id}>
             <div className={styles.row}>
               <span className={styles.prompt}>{PROMPT}</span>
               <span className={styles.cmd}>{item.input}</span>
             </div>
-            {item.output.map((line, j) => (
-              <div
-                key={j}
-                className={`${styles.out} ${line.tone ? styles[line.tone] : ""}`}
-                style={{ animationDelay: `${Math.min(j * 34, 500)}ms` }}
-              >
-                {line.text || " "}
-              </div>
-            ))}
+            {item.output.map((line, j) => {
+              const className = `${styles.out} ${line.tone ? styles[line.tone] : ""} ${
+                item.busy ? styles.pending : ""
+              }`;
+              if (!line.copy) {
+                return (
+                  <div
+                    key={j}
+                    className={className}
+                    style={{ animationDelay: `${Math.min(j * 34, 500)}ms` }}
+                  >
+                    {line.text || " "}
+                  </div>
+                );
+              }
+              const value = line.copy;
+              return (
+                <div
+                  key={j}
+                  className={className}
+                  style={{ animationDelay: `${Math.min(j * 34, 500)}ms` }}
+                >
+                  <button
+                    type="button"
+                    className={styles.copy}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      copy(value);
+                    }}
+                    title="Copy"
+                  >
+                    {line.text}
+                  </button>
+                  {copied === value && <span className={styles.copied}> copied</span>}
+                </div>
+              );
+            })}
           </div>
         ))}
 
@@ -284,7 +725,7 @@ export default function Console() {
               spellCheck={false}
               autoComplete="off"
               aria-label="Console command"
-              placeholder="last/exit USDe 1000000"
+              placeholder="last/live USDe 1000000"
             />
             <button type="submit" className="sr-only">
               Run command

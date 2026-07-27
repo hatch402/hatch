@@ -12,14 +12,23 @@
  * quietly die. Swapping a facilitator in later changes only this file.
  */
 
+import { recoverMessageAddress } from "viem";
+
 const RPC = process.env.RHC_RPC || "https://rpc.mainnet.chain.robinhood.com";
 const USDG = "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168";
 const TRANSFER_TOPIC =
   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 
-/** Where callers pay. Unset means the endpoint refuses rather than inventing
- *  an address — a wrong address here would take real money to nowhere. */
-export const PAY_TO = process.env.LASTOUT_PAY_TO?.toLowerCase();
+/** Where callers pay.
+ *
+ *  In the source rather than in an environment variable, deliberately. Every
+ *  402 response publishes this address anyway, so hiding it buys nothing — and
+ *  a missing variable on a deploy would leave the endpoint quietly refusing
+ *  payment with no way for anyone outside to tell why. Here it is versioned,
+ *  diffable, and the same address the site prints. */
+const DEFAULT_PAY_TO = "0x4826167c7366e9d2d9fc5f7bd1eba3626443f9dc";
+
+export const PAY_TO = (process.env.LASTOUT_PAY_TO || DEFAULT_PAY_TO).toLowerCase();
 
 export const PRICE_USDG = Number(process.env.LASTOUT_PRICE_USDG ?? "1");
 export const PASS_DAYS = Number(process.env.LASTOUT_PASS_DAYS ?? "30");
@@ -28,26 +37,59 @@ export type PaymentResult =
   | { ok: true; payer: string; paidUsdg: number; expiresAt: string }
   | { ok: false; reason: string };
 
+/** The node did not answer. Not the same as the thing not existing — the probe
+ *  learned this the hard way, and a payment gate that conflates the two tells a
+ *  paying caller their real transaction "was not found" and burns their pass. */
+export class ChainUnreachable extends Error {}
+
 async function rpc<T>(method: string, params: unknown[]): Promise<T | null> {
+  let response: Response;
   try {
-    const response = await fetch(RPC, {
+    response = await fetch(RPC, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
       cache: "no-store",
     });
-    const payload = await response.json();
-    return (payload.result ?? null) as T | null;
   } catch {
-    return null;
+    throw new ChainUnreachable(method);
   }
+  const payload = await response.json().catch(() => null);
+  if (!payload || payload.error) throw new ChainUnreachable(method);
+  return (payload.result ?? null) as T | null;
 }
 
-/** A pass is a USDG transfer to PAY_TO, at least PRICE_USDG, within the window. */
-export async function verifyPayment(txHash: string): Promise<PaymentResult> {
-  if (!PAY_TO) return { ok: false, reason: "receiving address not configured" };
-  if (!/^0x[0-9a-fA-F]{64}$/.test(txHash)) {
-    return { ok: false, reason: "X-PAYMENT must be a transaction hash" };
+/** The string a payer signs to claim their transaction as a pass. */
+export function passMessage(txHash: string): string {
+  return `lastout-pass:${txHash.toLowerCase()}`;
+}
+
+/**
+ * A pass is a USDG transfer to PAY_TO, at least PRICE_USDG, within the window —
+ * PLUS a signature over passMessage(hash) from the wallet that sent it.
+ *
+ * The signature is what stops freeloading. Every transfer to PAY_TO is public,
+ * so a bare hash is a ticket anyone can photocopy off the explorer. The
+ * signature can only come from the key that paid, and it never appears on
+ * chain. Still no account and no database: the server checks the claim against
+ * the chain and forgets it.
+ *
+ * Known limit: recovery assumes an EOA payer. A smart-contract wallet
+ * (ERC-1271) cannot produce a recoverable signature; support it when someone
+ * actually pays from one.
+ */
+export async function verifyPayment(header: string): Promise<PaymentResult> {
+  const [txHash, signature] = header.split(".");
+  if (!/^0x[0-9a-fA-F]{64}$/.test(txHash ?? "")) {
+    return { ok: false, reason: "X-PAYMENT must be <transaction hash>.<signature>" };
+  }
+  if (!/^0x[0-9a-fA-F]{130}$/.test(signature ?? "")) {
+    return {
+      ok: false,
+      reason:
+        `signature missing or malformed. sign the exact string "${passMessage(txHash)}" ` +
+        "with the wallet that paid, then send X-PAYMENT: <hash>.<signature>",
+    };
   }
 
   const receipt = await rpc<{
@@ -72,6 +114,26 @@ export async function verifyPayment(txHash: string): Promise<PaymentResult> {
     return { ok: false, reason: `paid ${amount} USDG, price is ${PRICE_USDG}` };
   }
 
+  // The payer is whoever the token contract says sent the USDG — not tx.from,
+  // which could be a router. The signature must recover to exactly that
+  // address, or this is someone waving a stranger's receipt.
+  const payer = "0x" + paid.topics[1].slice(-40);
+  let signer: string;
+  try {
+    signer = await recoverMessageAddress({
+      message: passMessage(txHash),
+      signature: signature as `0x${string}`,
+    });
+  } catch {
+    return { ok: false, reason: "signature does not parse" };
+  }
+  if (signer.toLowerCase() !== payer.toLowerCase()) {
+    return {
+      ok: false,
+      reason: `signature recovers to ${signer}, but the USDG came from ${payer}`,
+    };
+  }
+
   const block = await rpc<{ timestamp: string }>("eth_getBlockByNumber", [
     receipt.blockNumber,
     false,
@@ -86,7 +148,7 @@ export async function verifyPayment(txHash: string): Promise<PaymentResult> {
 
   return {
     ok: true,
-    payer: "0x" + paid.topics[1].slice(-40),
+    payer,
     paidUsdg: amount,
     expiresAt: new Date(expiresAt).toISOString(),
   };
@@ -103,19 +165,18 @@ export function challenge(resource: string) {
         asset: USDG,
         assetSymbol: "USDG",
         maxAmountRequired: String(Math.round(PRICE_USDG * 1e6)),
-        payTo: PAY_TO ?? null,
+        payTo: PAY_TO,
         resource,
         description: `${PASS_DAYS}-day pass to ${resource}`,
         mimeType: "application/json",
       },
     ],
-    howToPay: PAY_TO
-      ? [
-          `Send ${PRICE_USDG} USDG to ${PAY_TO} on Robinhood Chain (4663).`,
-          "Retry this request with header  X-PAYMENT: <your transaction hash>",
-          `The pass lasts ${PASS_DAYS} days from the block your payment landed in.`,
-          "No account, no API key. The transaction is the credential.",
-        ]
-      : ["This endpoint is not accepting payment yet."],
+    howToPay: [
+      `Send ${PRICE_USDG} USDG to ${PAY_TO} on Robinhood Chain (4663).`,
+      'Sign the string  lastout-pass:<your tx hash>  with the wallet that paid (personal_sign, or: cast wallet sign "lastout-pass:0x...").',
+      "Retry this request with header  X-PAYMENT: <tx hash>.<signature>",
+      `The pass lasts ${PASS_DAYS} days from the block your payment landed in.`,
+      "No account, no API key. The transaction is the receipt; the signature proves the receipt is yours — every transfer to this address is public, so a bare hash would be a ticket anyone could photocopy.",
+    ],
   };
 }

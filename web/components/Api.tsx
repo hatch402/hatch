@@ -25,11 +25,34 @@ const STEPS = [
   {
     text: (
       <>
-        Retry with <code>X-PAYMENT: &lt;your transaction hash&gt;</code>.
+        Sign <code>lastout-pass:&lt;tx hash&gt;</code> with the wallet that paid, and retry with{" "}
+        <code>X-PAYMENT: &lt;tx hash&gt;.&lt;signature&gt;</code>.
       </>
     ),
   },
-  { text: <>The server reads that transaction back off the chain and answers.</> },
+  {
+    text: (
+      <>
+        The server reads the transaction off the chain and checks the signature recovers to the
+        wallet that sent it. Transfers to this address are public, so a bare hash would be a ticket
+        anyone could photocopy — the signature is what only the payer can produce.
+      </>
+    ),
+  },
+];
+
+/** The same four steps, driven from the console rather than from curl. Written
+ *  out because a payment flow you can only read about is a claim, not a demo. */
+const BY_HAND = [
+  <>
+    <code>last/live USDe 1000000</code> — the console calls this endpoint for real and prints the
+    402 it gets back, with the address to pay.
+  </>,
+  <>Send the USDG from your own wallet. Nothing on this page can move your funds.</>,
+  <>
+    <code>last/pay 0x…</code> — your wallet signs the hash (one click, moves nothing), and the
+    question you already asked runs by itself.
+  </>,
 ];
 
 export default function Api() {
@@ -74,6 +97,22 @@ run  probe/exit_depth.py`}</pre>
             <p className={styles.stepText}>{step.text}</p>
           </div>
         ))}
+      </div>
+
+      <div className={styles.tryIt}>
+        <p className={styles.tryHead}>
+          You can run all of that in the console at the top of this page — no terminal, no client
+          library.
+        </p>
+        <ol className={styles.tryList}>
+          {BY_HAND.map((step, i) => (
+            <li key={i}>{step}</li>
+          ))}
+        </ol>
+        <p className={styles.tryNote}>
+          The console hits the same URL an agent would, gets the same 402, and keeps your pass in
+          this browser only. The free commands keep working whether or not you ever pay.
+        </p>
       </div>
 
       <p className={styles.note}>

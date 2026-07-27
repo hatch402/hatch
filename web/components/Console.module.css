@@ -106,6 +106,42 @@
 .amber { color: var(--amber); font-weight: 700; }
 .ember { color: var(--ember); font-weight: 700; }
 
+/* A network command holds the line open. The line reads as unfinished rather
+   than as an answer, so nobody mistakes "working" for "nothing came back". */
+.pending { animation: none; opacity: 0.75; }
+.pending::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 1em;
+  margin-left: 4px;
+  background: var(--amber);
+  vertical-align: text-bottom;
+  animation: blink 0.7s steps(1) infinite;
+}
+
+/* Addresses and hashes are the one thing here nobody should retype. */
+.copy {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: copy;
+  white-space: pre-wrap;
+  word-break: break-all;
+  border-bottom: 1px dotted var(--rule-strong);
+}
+
+.copy:hover { border-bottom-color: var(--amber); }
+
+.copied {
+  color: var(--amber);
+  font-weight: 700;
+}
+
 /* Long command lines in last/proof must not force the page to scroll sideways. */
 @media (max-width: 720px) {
   .body { font-size: 10.5px; min-height: 360px; }
