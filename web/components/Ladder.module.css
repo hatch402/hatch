@@ -8,7 +8,10 @@
   align-items: center;
   padding: 80px 0;
   border-top: 1px solid var(--rule);
-  background: var(--paper);
+  /* Transparent on purpose: nothing ever scrolls beneath this element except
+     its own scroller's empty track, and an opaque fill here would punch a
+     flat white hole in the page's survey-grid backdrop. */
+  background: transparent;
 }
 
 .title { font-size: clamp(30px, 5vw, 58px); margin: 14px 0 34px; }

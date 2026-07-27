@@ -30,7 +30,15 @@
 }
 .wordmarkSmall b { color: var(--amber); }
 
-.hero { padding: clamp(48px, 8vw, 96px) 0 clamp(56px, 8vw, 104px); }
+/* One warm wash, hero only, and faint enough to deny. It keeps the opening
+   screen from reading clinical without turning the page into an aurora —
+   decorative amber anywhere else would dilute what amber means here. */
+.hero {
+  padding: clamp(48px, 8vw, 96px) 0 clamp(56px, 8vw, 104px);
+  background:
+    radial-gradient(ellipse 1100px 520px at 78% -8%,
+      rgba(234, 140, 0, 0.07), transparent 62%);
+}
 
 .heroGrid {
   display: grid;

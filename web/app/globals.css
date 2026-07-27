@@ -37,6 +37,41 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* The sheet the instrument prints on.
+
+   Two fixed layers, both inert: a survey grid — minor rule every 28px, a
+   heavier major rule every 140px, like measurement paper — and a breath of
+   photographic grain so the paper reads as stock rather than as #FBFAF7.
+   Both sit behind everything and cost nothing at runtime. Amber is absent
+   here on purpose: on this site amber marks a constraint, and a background
+   is not one. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to right,
+      rgba(20, 22, 26, 0.045) 0 1px, transparent 1px 140px),
+    repeating-linear-gradient(to bottom,
+      rgba(20, 22, 26, 0.045) 0 1px, transparent 1px 140px),
+    repeating-linear-gradient(to right,
+      rgba(20, 22, 26, 0.02) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(to bottom,
+      rgba(20, 22, 26, 0.02) 0 1px, transparent 1px 28px);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 ::selection { background: var(--amber); color: #fff; }
 
 a { color: inherit; text-decoration: none; }
