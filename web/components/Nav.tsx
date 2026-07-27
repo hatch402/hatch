@@ -13,6 +13,9 @@ export default function Nav({ block = true }: { block?: boolean }) {
           <Link className={styles.link} href="/#markets">
             Markets
           </Link>
+          <Link className={styles.link} href="/#api">
+            API
+          </Link>
           <Link className={styles.link} href="/docs">
             Method
           </Link>
