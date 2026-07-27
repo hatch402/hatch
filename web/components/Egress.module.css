@@ -1,0 +1,50 @@
+/* Full-bleed band. It sits between the headline and the reading, touching
+   neither — the argument gets its own air rather than hiding behind text. */
+
+.figure {
+  margin: clamp(26px, 4vw, 44px) 0 0;
+  padding: 0;
+}
+
+.band {
+  position: relative;
+  width: 100%;
+  height: clamp(150px, 20vw, 240px);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.left,
+.right {
+  position: absolute;
+  bottom: 10px;
+  color: var(--faint);
+  pointer-events: none;
+}
+
+.left { left: var(--gutter); }
+.right { right: var(--gutter); color: var(--amber); }
+
+.caption {
+  max-width: 62ch;
+  margin: 14px auto 0;
+  padding-inline: var(--gutter);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--faint);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .band { height: 132px; }
+  .left, .right { bottom: 7px; }
+  .caption { font-size: 11.5px; text-align: left; }
+}

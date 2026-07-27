@@ -5,6 +5,7 @@ import Ladder from "../components/Ladder";
 import Evidence from "../components/Evidence";
 import Nav from "../components/Nav";
 import Gauge from "../components/Gauge";
+import Egress from "../components/Egress";
 import Api from "../components/Api";
 import Link from "next/link";
 import Reveal from "../components/Reveal";
@@ -27,6 +28,8 @@ export default function Home() {
             <span className={styles.quiet}>Not the fire.</span>
           </h1>
         </div>
+
+        <Egress />
 
         <div className={`shell ${styles.heroGrid}`}>
           <div className={styles.heroCopy}>
