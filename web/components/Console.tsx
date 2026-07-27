@@ -130,9 +130,12 @@ function exitAnswer(symbol: string, sizeRaw: string): Line[] {
     return [{ text: `${result.market.symbol} is not measured yet.`, tone: "dim" }];
   }
   const { market, ceiling, clears, shortfall, slippage } = result;
+  // "Exit into USDG", spelled out. The subject is collateral being turned into
+  // the loan asset — without the direction, holders of the loan asset read
+  // this backwards and miss that it is about the backing of their own deposit.
   const head = clears
-    ? { text: `YES — ${usd(size)} of ${market.symbol} can exit.`, tone: "ink" as Tone }
-    : { text: `NO — ${usd(size)} of ${market.symbol} cannot exit.`, tone: "ember" as Tone };
+    ? { text: `YES — ${usd(size)} of ${market.symbol} can exit into ${market.loan}.`, tone: "ink" as Tone }
+    : { text: `NO — ${usd(size)} of ${market.symbol} cannot exit into ${market.loan}.`, tone: "ember" as Tone };
   const lines: Line[] = [
     head,
     { text: "" },
@@ -244,6 +247,7 @@ function challengeLines(body: Challenge, symbol: string, size: number): Line[] {
 
 type LiveAnswer = {
   symbol: string;
+  loanAsset?: string;
   askedUsd: number;
   quotedAtBlock: string;
   clears: boolean;
@@ -258,8 +262,8 @@ type LiveAnswer = {
 
 function answerLines(body: LiveAnswer): Line[] {
   const head = body.clears
-    ? { text: `YES — ${usd(body.askedUsd)} of ${body.symbol} can exit right now.`, tone: "ink" as Tone }
-    : { text: `NO — ${usd(body.askedUsd)} of ${body.symbol} cannot exit right now.`, tone: "ember" as Tone };
+    ? { text: `YES — ${usd(body.askedUsd)} of ${body.symbol} can exit into ${body.loanAsset ?? "USDG"} right now.`, tone: "ink" as Tone }
+    : { text: `NO — ${usd(body.askedUsd)} of ${body.symbol} cannot exit into ${body.loanAsset ?? "USDG"} right now.`, tone: "ember" as Tone };
 
   const lines: Line[] = [
     { text: `LIVE · block ${body.quotedAtBlock}`, tone: "amber" },
