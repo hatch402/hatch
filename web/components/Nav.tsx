@@ -21,7 +21,7 @@ export default function Nav({ block = true }: { block?: boolean }) {
           </Link>
           <a
             className={styles.link}
-            href="https://github.com/hatchxyz/hatch"
+            href="https://github.com/hatch402/hatch"
             rel="noopener"
           >
             Source
