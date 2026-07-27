@@ -174,6 +174,12 @@ export default function Home() {
             figure is a measurement of on-chain state at a stated block.
           </p>
           <p className={styles.small}>
+            There is a token, $HATCH —{" "}
+            <span className="mono">0xbf343e01f8769f2dc9e606a07922d0f41465888a</span> on Pons, LP
+            locked at launch. Its pool fees fund the probes. It is not required for anything: the
+            data on this page is free either way.
+          </p>
+          <p className={styles.small}>
             <span className={styles.wordmarkSmall}>
               HATCH<b>402</b>
             </span>{" "}
