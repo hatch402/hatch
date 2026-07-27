@@ -22,7 +22,7 @@ const mono = Martian_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HATCH — liquidation coverage on Robinhood Chain",
+  title: "HATCH",
   description:
     "How much lending collateral on Robinhood Chain can actually exit on-chain. Measured daily against the venues a liquidator contract can call.",
   metadataBase: new URL("https://hatch402.vercel.app"),

@@ -170,7 +170,7 @@ python3 probe/redemption.py   # local redemption paths`}</pre>
           <Link className={styles.link} href="/">
             ← Back to the reading
           </Link>
-          <a className={styles.link} href="https://github.com/lastoutlabs/hatch">
+          <a className={styles.link} href="https://github.com/hatchxyz/hatch">
             Source and snapshots →
           </a>
         </div>

@@ -77,7 +77,7 @@ git commit -q -m "Coverage snapshot ${DATE} (block ${BLOCK})" || { log "commit f
 PREV="$(gh auth status 2>&1 | grep -B1 'Active account: true' | grep -o 'account [A-Za-z0-9_-]*' | awk '{print $2}' | head -1)"
 # gh caches the login name from when the token was issued, so a GitHub
 # username change leaves it pointing at the old one. Try both.
-for candidate in hatch402 lastoutlabs lastoutxyz; do
+for candidate in hatchxyz lastoutlabs lastoutxyz; do
   if gh auth switch --hostname github.com --user "$candidate" >/dev/null 2>&1; then
     log "gh account -> $candidate"
     break
@@ -90,7 +90,7 @@ else
   log "push failed - commit is local, will go out with the next run"
 fi
 
-if [ -n "$PREV" ] && [ "$PREV" != "hatch402" ] && [ "$PREV" != "lastoutlabs" ] && [ "$PREV" != "lastoutxyz" ]; then
+if [ -n "$PREV" ] && [ "$PREV" != "hatchxyz" ] && [ "$PREV" != "lastoutlabs" ] && [ "$PREV" != "lastoutxyz" ]; then
   gh auth switch --hostname github.com --user "$PREV" >/dev/null 2>&1
   log "restored gh account to ${PREV}"
 fi
