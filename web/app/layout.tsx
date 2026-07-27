@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://hatch402.vercel.app"),
   openGraph: {
     title: "HATCH",
+    siteName: "HATCH",
     description:
       "How much lending collateral on Robinhood Chain can actually exit on-chain.",
     type: "website",
