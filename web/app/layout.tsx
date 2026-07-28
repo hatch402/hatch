@@ -34,6 +34,9 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: { card: "summary_large_image", site: "@hatch402" },
+  verification: {
+    other: { "virtual-protocol-site-verification": "cf48097bf55798261024758d527bbf0f" },
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
