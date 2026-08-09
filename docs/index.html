@@ -68,8 +68,8 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:v
   </div>
   <div class="stamp">
     CHAIN 4663 · MORPHO<br>
-    POOL DEPTH · BLOCK 28080173<br>
-    REDEMPTION · BLOCK 28080194
+    POOL DEPTH · BLOCK 31542285<br>
+    REDEMPTION · BLOCK 31542320
   </div>
 </header>
 
@@ -77,22 +77,22 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:v
 <div class="cards">
   <div class="card">
     <div class="s">Collateral measured</div>
-    <div class="v">$315,505,923</div>
+    <div class="v">$351,676,917</div>
     <div class="s">across 3 markets</div>
   </div>
   <div class="card">
     <div class="s">Can exit on-chain</div>
-    <div class="v">$12,757,013</div>
-    <div class="s">4.04% coverage</div>
+    <div class="v">$17,861,129</div>
+    <div class="s">5.08% coverage</div>
   </div>
   <div class="card alert">
     <div class="s">Bridged, pool is the only exit</div>
-    <div class="v">$302,804,501</div>
-    <div class="s">$2,715,399 of exit · 0.90%</div>
+    <div class="v">$328,887,879</div>
+    <div class="s">$2,792,976 of exit · 0.85%</div>
   </div>
   <div class="card alert">
     <div class="s">Bridged collateral to exit</div>
-    <div class="v">111.5 : 1</div>
+    <div class="v">117.8 : 1</div>
     <div class="s">dollars waiting per dollar out</div>
   </div>
 </div>
@@ -109,41 +109,47 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:v
     <tbody>
       <tr>
         <td class="sym">USDe <span class="loan">/ USDG</span></td>
-        <td class="num">$233,211,812</td>
-        <td class="num">$205,059,642</td>
-        <td class="num">$502,742</td>
+        <td class="num">$250,491,364</td>
+        <td class="num">$223,548,342</td>
+        <td class="num">$505,924</td>
         <td class="mech"><span class="tag bad">bridged</span></td>
         <td class="cov">
           <div class="bar"><i class="bad" style="width:0.40%"></i></div>
-          <span class="pct bad">0.22%</span>
+          <span class="pct bad">0.20%</span>
         </td>
       </tr>
       <tr>
         <td class="sym">syrupUSDG <span class="loan">/ USDG</span></td>
-        <td class="num">$69,592,689</td>
-        <td class="num">$61,128,869</td>
-        <td class="num">$2,212,657</td>
+        <td class="num">$78,396,515</td>
+        <td class="num">$69,161,116</td>
+        <td class="num">$2,287,051</td>
         <td class="mech"><span class="tag bad">bridge-minted</span></td>
         <td class="cov">
-          <div class="bar"><i class="bad" style="width:3.18%"></i></div>
-          <span class="pct bad">3.18%</span>
+          <div class="bar"><i class="bad" style="width:2.92%"></i></div>
+          <span class="pct bad">2.92%</span>
         </td>
       </tr>
       <tr>
         <td class="sym">spUSDG <span class="loan">/ USDG</span></td>
-        <td class="num">$12,701,422</td>
-        <td class="num">$9,902,161</td>
-        <td class="num">$10,041,615</td>
+        <td class="num">$22,789,038</td>
+        <td class="num">$20,007,422</td>
+        <td class="num">$15,068,153</td>
         <td class="mech"><span class="tag ok">redeemable</span></td>
         <td class="cov">
-          <div class="bar"><i class="ok" style="width:79.06%"></i></div>
-          <span class="pct ok">79.06%</span>
+          <div class="bar"><i class="ok" style="width:66.12%"></i></div>
+          <span class="pct ok">66.12%</span>
         </td>
+      </tr>
+      <tr class="unmeasured">
+        <td class="sym">CASHCAT <span class="loan">/ USDG</span></td>
+        <td class="num">$35,309</td>
+        <td class="num">$8,257</td>
+        <td colspan="3" class="note-cell">not measured</td>
       </tr>
       <tr class="unmeasured">
         <td class="sym">wsNET <span class="loan">/ USDG</span></td>
         <td class="num">$0</td>
-        <td class="num">$2,354</td>
+        <td class="num">$3,231</td>
         <td colspan="3" class="note-cell">not measured</td>
       </tr>
     </tbody>
@@ -183,7 +189,7 @@ python3 probe/redemption.py   # local redemption paths</pre>
 </section>
 
 <footer>
-  Snapshots: <code>markets-2026-08-05.json</code> · <code>pool-depth-2026-08-05.json</code> · <code>redemption-2026-08-05.json</code><br><br>
+  Snapshots: <code>markets-2026-08-09.json</code> · <code>pool-depth-2026-08-09.json</code> · <code>redemption-2026-08-09.json</code><br><br>
   Not affiliated with, endorsed by, sponsored by, or connected to Robinhood Markets, Inc. or any of
   its subsidiaries. Nothing here is financial, investment, or legal advice. Every figure is a
   measurement of on-chain state at a stated block &mdash; check it yourself rather than taking ours.
