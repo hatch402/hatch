@@ -1,0 +1,177 @@
+{
+  "chainId": 4663,
+  "block": "",
+  "markets": [
+    {
+      "symbol": "USDe",
+      "token": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+      "pool": {
+        "fee": 100,
+        "tickSpacing": 1
+      },
+      "reference_rate_at_10k": 0.999659,
+      "ladder": [
+        {
+          "size_in": 10000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 50000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 100000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 250000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 500000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 1000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 2500000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 5000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 10000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 50000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 200000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        }
+      ],
+      "v4_ceiling_usdg": 0.0,
+      "v2": {
+        "pair": null,
+        "usdg_in_pair": 0.0
+      },
+      "max_atomic_exit_usdg": 0.0
+    },
+    {
+      "symbol": "syrupUSDG",
+      "token": "0x40858070814a57FdF33a613ae84fE0a8b4a874f7",
+      "pool": {
+        "fee": 500,
+        "tickSpacing": 10
+      },
+      "reference_rate_at_10k": 1.007323,
+      "ladder": [
+        {
+          "size_in": 10000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 50000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 100000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 250000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 500000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 1000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 2500000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 5000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 10000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 50000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        },
+        {
+          "size_in": 200000000,
+          "usdg_out": null,
+          "slippage_pct": null,
+          "status": "REVERT"
+        }
+      ],
+      "v4_ceiling_usdg": 0.0,
+      "v2": {
+        "pair": null,
+        "usdg_in_pair": 0.0
+      },
+      "max_atomic_exit_usdg": 0.0
+    },
+    {
+      "symbol": "spUSDG",
+      "pool": null,
+      "note": "no pool responded"
+    }
+  ]
+}
