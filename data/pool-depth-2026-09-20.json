@@ -1,0 +1,177 @@
+{
+  "chainId": 4663,
+  "block": "67530936",
+  "markets": [
+    {
+      "symbol": "USDe",
+      "token": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+      "pool": {
+        "fee": 100,
+        "tickSpacing": 1
+      },
+      "reference_rate_at_10k": 0.999555,
+      "ladder": [
+        {
+          "size_in": 10000,
+          "usdg_out": 9995.55,
+          "slippage_pct": 0.0,
+          "status": "OK"
+        },
+        {
+          "size_in": 50000,
+          "usdg_out": 49967.91,
+          "slippage_pct": -0.02,
+          "status": "OK"
+        },
+        {
+          "size_in": 100000,
+          "usdg_out": 99911.06,
+          "slippage_pct": -0.044,
+          "status": "OK"
+        },
+        {
+          "size_in": 250000,
+          "usdg_out": 249591.2,
+          "slippage_pct": -0.119,
+          "status": "OK"
+        },
+        {
+          "size_in": 500000,
+          "usdg_out": 473224.21,
+          "slippage_pct": -5.313,
+          "status": "OK"
+        },
+        {
+          "size_in": 1000000,
+          "usdg_out": 473224.64,
+          "slippage_pct": -52.656,
+          "status": "OK"
+        },
+        {
+          "size_in": 2500000,
+          "usdg_out": 473224.65,
+          "slippage_pct": -81.063,
+          "status": "OK"
+        },
+        {
+          "size_in": 5000000,
+          "usdg_out": 473224.66,
+          "slippage_pct": -90.531,
+          "status": "OK"
+        },
+        {
+          "size_in": 10000000,
+          "usdg_out": 473224.66,
+          "slippage_pct": -95.266,
+          "status": "OK"
+        },
+        {
+          "size_in": 50000000,
+          "usdg_out": 473224.66,
+          "slippage_pct": -99.053,
+          "status": "OK"
+        },
+        {
+          "size_in": 200000000,
+          "usdg_out": 473224.66,
+          "slippage_pct": -99.763,
+          "status": "OK"
+        }
+      ],
+      "v4_ceiling_usdg": 473224.66,
+      "v2": {
+        "pair": "0x842235D9c61E5a0C548e10b6FdcD8E56D35D9661",
+        "usdg_in_pair": 0.0
+      },
+      "max_atomic_exit_usdg": 473224.66
+    },
+    {
+      "symbol": "syrupUSDG",
+      "token": "0x40858070814a57FdF33a613ae84fE0a8b4a874f7",
+      "pool": {
+        "fee": 500,
+        "tickSpacing": 10
+      },
+      "reference_rate_at_10k": 1.009795,
+      "ladder": [
+        {
+          "size_in": 10000,
+          "usdg_out": 10097.95,
+          "slippage_pct": 0.0,
+          "status": "OK"
+        },
+        {
+          "size_in": 50000,
+          "usdg_out": 50484.64,
+          "slippage_pct": -0.01,
+          "status": "OK"
+        },
+        {
+          "size_in": 100000,
+          "usdg_out": 100956.46,
+          "slippage_pct": -0.023,
+          "status": "OK"
+        },
+        {
+          "size_in": 250000,
+          "usdg_out": 252294.99,
+          "slippage_pct": -0.061,
+          "status": "OK"
+        },
+        {
+          "size_in": 500000,
+          "usdg_out": 504269.8,
+          "slippage_pct": -0.124,
+          "status": "OK"
+        },
+        {
+          "size_in": 1000000,
+          "usdg_out": 1007261.28,
+          "slippage_pct": -0.251,
+          "status": "OK"
+        },
+        {
+          "size_in": 2500000,
+          "usdg_out": 1998194.19,
+          "slippage_pct": -20.848,
+          "status": "OK"
+        },
+        {
+          "size_in": 5000000,
+          "usdg_out": 1998194.19,
+          "slippage_pct": -60.424,
+          "status": "OK"
+        },
+        {
+          "size_in": 10000000,
+          "usdg_out": 1998194.19,
+          "slippage_pct": -80.212,
+          "status": "OK"
+        },
+        {
+          "size_in": 50000000,
+          "usdg_out": 1998194.19,
+          "slippage_pct": -96.042,
+          "status": "OK"
+        },
+        {
+          "size_in": 200000000,
+          "usdg_out": 1998194.19,
+          "slippage_pct": -99.011,
+          "status": "OK"
+        }
+      ],
+      "v4_ceiling_usdg": 1998194.19,
+      "v2": {
+        "pair": null,
+        "usdg_in_pair": 0.0
+      },
+      "max_atomic_exit_usdg": 1998194.19
+    },
+    {
+      "symbol": "spUSDG",
+      "pool": null,
+      "note": "no pool responded"
+    }
+  ]
+}
