@@ -68,8 +68,8 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:v
   </div>
   <div class="stamp">
     CHAIN 4663 · MORPHO<br>
-    POOL DEPTH · BLOCK 104660880<br>
-    REDEMPTION · BLOCK 104660937
+    POOL DEPTH · BLOCK 105499586<br>
+    REDEMPTION · BLOCK 105499606
   </div>
 </header>
 
@@ -77,22 +77,22 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:v
 <div class="cards">
   <div class="card">
     <div class="s">Collateral measured</div>
-    <div class="v">$355,045,636</div>
+    <div class="v">$353,708,818</div>
     <div class="s">across 1 markets</div>
   </div>
   <div class="card">
     <div class="s">Can exit on-chain</div>
-    <div class="v">$376,298</div>
-    <div class="s">0.11% coverage</div>
+    <div class="v">$412,745</div>
+    <div class="s">0.12% coverage</div>
   </div>
   <div class="card alert">
     <div class="s">Bridged, pool is the only exit</div>
-    <div class="v">$355,045,636</div>
-    <div class="s">$376,298 of exit · 0.11%</div>
+    <div class="v">$353,708,818</div>
+    <div class="s">$412,745 of exit · 0.12%</div>
   </div>
   <div class="card alert">
     <div class="s">Bridged collateral to exit</div>
-    <div class="v">943.5 : 1</div>
+    <div class="v">857.0 : 1</div>
     <div class="s">dollars waiting per dollar out</div>
   </div>
 </div>
@@ -109,61 +109,67 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:v
     <tbody>
       <tr>
         <td class="sym">USDe <span class="loan">/ USDG</span></td>
-        <td class="num">$355,045,636</td>
-        <td class="num">$314,040,638</td>
-        <td class="num">$376,298</td>
+        <td class="num">$353,708,818</td>
+        <td class="num">$309,256,378</td>
+        <td class="num">$412,745</td>
         <td class="mech"><span class="tag bad">bridged</span></td>
         <td class="cov">
           <div class="bar"><i class="bad" style="width:0.40%"></i></div>
-          <span class="pct bad">0.11%</span>
+          <span class="pct bad">0.12%</span>
         </td>
       </tr>
       <tr class="unmeasured">
         <td class="sym">wsNET <span class="loan">/ USDG</span></td>
-        <td class="num">$2,615,718</td>
-        <td class="num">$1,046,596</td>
+        <td class="num">$2,633,522</td>
+        <td class="num">$1,052,574</td>
         <td colspan="3" class="note-cell">not measured</td>
       </tr>
       <tr class="unmeasured">
         <td class="sym">SPCX <span class="loan">/ USDG</span></td>
-        <td class="num">$1,115,343</td>
-        <td class="num">$526,604</td>
+        <td class="num">$1,128,590</td>
+        <td class="num">$526,978</td>
         <td colspan="3" class="note-cell">not measured</td>
       </tr>
       <tr class="unmeasured">
         <td class="sym">AAPL <span class="loan">/ USDG</span></td>
-        <td class="num">$476,547</td>
-        <td class="num">$201,628</td>
+        <td class="num">$477,068</td>
+        <td class="num">$201,746</td>
         <td colspan="3" class="note-cell">not measured</td>
       </tr>
       <tr class="unmeasured">
         <td class="sym">NVDA <span class="loan">/ USDG</span></td>
-        <td class="num">$123,953</td>
-        <td class="num">$28,970</td>
+        <td class="num">$125,252</td>
+        <td class="num">$58,970</td>
         <td colspan="3" class="note-cell">not measured</td>
       </tr>
       <tr class="unmeasured">
         <td class="sym">PONS <span class="loan">/ USDG</span></td>
-        <td class="num">$75,485</td>
-        <td class="num">$16,092</td>
+        <td class="num">$72,868</td>
+        <td class="num">$16,068</td>
         <td colspan="3" class="note-cell">not measured</td>
       </tr>
       <tr class="unmeasured">
         <td class="sym">GOOGL <span class="loan">/ USDG</span></td>
-        <td class="num">$70,003</td>
-        <td class="num">$22,279</td>
+        <td class="num">$69,523</td>
+        <td class="num">$22,281</td>
+        <td colspan="3" class="note-cell">not measured</td>
+      </tr>
+      <tr class="unmeasured">
+        <td class="sym">AAPL <span class="loan">/ USDG</span></td>
+        <td class="num">$52,424</td>
+        <td class="num">$25,998</td>
         <td colspan="3" class="note-cell">not measured</td>
       </tr>
       <tr class="unmeasured">
         <td class="sym">AI <span class="loan">/ USDG</span></td>
-        <td class="num">$40,674</td>
-        <td class="num">$11,835</td>
+        <td class="num">$39,280</td>
+        <td class="num">$11,840</td>
         <td colspan="3" class="note-cell">not measured</td>
       </tr>
       <tr class="unmeasured">
         <td class="sym">STEERUV417 <span class="loan">/ USDG</span></td>
         <td class="num">$0</td>
-        <td class="num">$4,979</td>
+        <td class="num">$5,043</td>
         <td colspan="3" class="note-cell">not measured</td>
       </tr>
     </tbody>
@@ -203,7 +209,7 @@ python3 probe/redemption.py   # local redemption paths</pre>
 </section>
 
 <footer>
-  Snapshots: <code>markets-2026-11-03.json</code> · <code>pool-depth-2026-11-03.json</code> · <code>redemption-2026-11-03.json</code><br><br>
+  Snapshots: <code>markets-2026-11-04.json</code> · <code>pool-depth-2026-11-04.json</code> · <code>redemption-2026-11-04.json</code><br><br>
   Not affiliated with, endorsed by, sponsored by, or connected to Robinhood Markets, Inc. or any of
   its subsidiaries. Nothing here is financial, investment, or legal advice. Every figure is a
   measurement of on-chain state at a stated block &mdash; check it yourself rather than taking ours.
